@@ -32,7 +32,7 @@ class State():
     def setcurrent(self,newstate):
         global current
         current = newstate
-        print("---------------------------------------------------")
+        print("--------------------------------------------------")
         print("new state has been set")
         current.showstate()
 
