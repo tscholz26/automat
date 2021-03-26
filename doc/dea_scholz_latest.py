@@ -4,7 +4,7 @@ Documentation for this module.
 More details.
 """
 
-vers = "2.1"
+vers = "2.2.0"
 
 from tkinter import *
 import math, time
@@ -23,9 +23,13 @@ global rely
 
 class State():
     """
-    Diese Klasse beschreibt zstände
-    outcomes: verschiedene folgezstände in bestimmter reihenfolge
-    alphabet: zum erreichen der entsprechenden folgezustände nötige alphabetelemente
+    Diese Klasse beschreibt Zustände
+    Member-Variablen:
+        outcomes: mögliche Folgezustände in bestimmter Reihenfolge
+        alphabet: zum Erreichen der entsprechenden Folgezustände nötige Alphabetelemente
+        x: x-Koordinate (später in der GUI nötig)
+        y: y-Koordinate
+        final: Wahrheitswert, gibt an, ob der Zustand ein Finalzustand ist
     """
     def __init__(self, name = str, outcomes = [], alphabet = [], x = float, y = float, final = bool):
         self.__name = name
@@ -36,11 +40,15 @@ class State():
         self.__final = final
 
     def name(self):
-        """Diese Methode dient dazu, den Namen des zstands zurückzugeben.
+        """Diese Methode dient dazu, den Namen des Zustands zurückzugeben.
         """
         return(self.__name)
 
     def setcurrent(self,newstate):
+        """Diese Methode stellt einen neuen Zustand ein. Dabei wird der alte Zustand
+        gespeichert und die Variable current (aktueller Zustand) wird zur Variable
+        newstate (beide Typ State).
+        """
         global prev
         global current
         prev = current
@@ -51,6 +59,8 @@ class State():
         
 
     def showstate(self):
+        """Diese Methode gibt Details zum aktuellen Zustand aus
+        """
         print("name: " + self.__name)
         current.draw()
         if len(self.__outcomes) > 0:
@@ -66,27 +76,43 @@ class State():
 
             
     def getoutcomes(self):
+        """Diese Methode gibt die möglichen Folgezustände zurück
+        """
         return(self.__outcomes)
 
     def getalphabet(self):
+        """Diese Methode legt eine neue x-Koordinate fest
+        """
         return(self.__alphabet)
 
     def setx(self,x):
+        """Diese Methode legt eine neue y-Koordinate fest
+        """
         self.__x = x
 
     def sety(self,y):
+        
         self.__y = y
 
     def x(self):
+        """Diese Methode gibt die x-Koordinate zurück
+        """
         return(self.__x)
 
     def y(self):
+        """Diese Methode gibt die y-Koordinate zurück
+        """
         return(self.__y)
 
     def final(self):
+        """Diese Methode gibt zurück, ob der State ein Finalzustand ist
+        """
         return(self.__final)
 
     def use(self, item):
+        """Diese Methode simuliert die Nutzung eines bestimmten Alphabetelements.
+        Dabei wird die bereits beschriebene Methode setcurrent(newstate) genutzt
+        """
         global current
         if item in self.__alphabet:
             current.setcurrent(zst(self.__outcomes[self.__alphabet.index(item)]))
@@ -94,6 +120,11 @@ class State():
             print("item unavailable")
 
     def draw(self):
+        """Diese Methode ist für die GUI zuständig. Dabei wird der vorhergehende
+        Zustand gezeichnet, der aktuelle, die Folgezustände und Pfeile, die den aktuellen
+        Zustand mit den Folgezuständen verbinden. Zudem steht auf dem Pfeil, durch welche
+        Alphabetelemente man diese FOlgezustände erreicht.
+        """
         canvas1.delete(ALL)
         if current.final():
             labelfinal["text"] = "ZIELZUSTAND"
@@ -170,6 +201,9 @@ class State():
 
 #Startwert definieren und anzeigen
 def initdea():
+    """Hiermit wird das Programm initialisiert. Dabei wird der erste Zustand eingeleitet
+    und erste Informationen werden mithilfe der showstate()-Methode ausgegeben.
+    """
     global current
     global startval
     current = startval
@@ -177,7 +211,8 @@ def initdea():
     current.showstate()
 
 def zst(name):
-    """sucht zst mit name "name" heraus, vergleichar mit str(int)
+    """Diese Methode sucht den Zustand mit dem Name "name" heraus und gibt diesen zurück.
+    Man kann so aus strings Variablen von meinem eigenen Typ State machen.
     """
     for state in statelist:
         if name == state.name():
@@ -200,6 +235,10 @@ def click(eventclick):
     clicky = eventclick.y
 
 def release(eventclick):
+    """Diese Methode wird aufgerufen, wenn Mouse1 losgelassen wird. Dabei wird
+    überprüft, ob der Mauszeiger sich bei Klicken und Loslassen auf einem der Boxen
+    für die Zielstunde lag und leitet diese gegebenenfalls ein.
+    """
     global clickx
     global clicky
     global relx
@@ -218,6 +257,8 @@ def release(eventclick):
                         current.setcurrent(zst(state))
 
 def helpwindow():
+    """Diese Methode ruft ein Hilfefenster mit einem erklärenden Text auf
+    """
     popup = Tk()
     popup.title("Hilfe")
     msg = ("Oben links finden Sie in hellgrau den vorhergehenden\nZustand und oben rechts den aktuellen Zustand.\nUnten sind die möglichen Zielzustände aufgelistet.\nSie können entweder die Zielzustände anklicken,\noder Sie geben das passende Alphabetelement oben\nin das Entry ein und bestätigen. Mit dem reset-Button\nkönnen Sie zum Startzustand zurückkehren.")
