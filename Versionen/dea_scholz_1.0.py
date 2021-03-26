@@ -54,10 +54,10 @@ class State():
     def getalphabet(self):
         return(self.__alphabet)
 
-q_0 = State("q_0", ["q_0", "q_1", "q_3"], [0,1,3], 20, 40, 0)
-q_1 = State("q_1", ["q_1", "q_2"], [1,2], 20, 40, 0)
-q_2 = State("q_2", ["q_1"], 20, [1], 40, 0)
-q_3 = State("q_3", ["q_1", "q_2", "q_3"], [1,2,3], 20, 40, 1)
+q_0 = State("q_0", ["q_0", "q_1", "q_3"], ["a","1","3"], 20, 40, 0)
+q_1 = State("q_1", ["q_1", "q_2"], ["1","2"], 20, 40, 0)
+q_2 = State("q_2", ["q_0"], ["f"], 20, 40, 0)
+q_3 = State("q_3", ["q_1", "q_2", "q_3"], ["1","2","3"], 20, 40, 1)
 
 statelist = [q_0, q_1, q_2, q_3]
 #Startwert definieren und anzeigen
@@ -69,7 +69,7 @@ current.showstate()
 def asknextstate():
     alph = current.getalphabet()
     outc = current.getoutcomes()
-    alphitem = int(input("next alphabet item used? "))
+    alphitem = (input("next alphabet item used? "))
     if alphitem in alph:
         nextname = outc[alph.index(alphitem)]
         if nextname in outc:
