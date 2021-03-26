@@ -238,7 +238,7 @@ statelist = [q_2, q_05, q_0, q_013, q_4]
 global startval
 startval = q_2
 
-label1 = Label(master, text = "Zu benutzendes Alphabetelement: ")
+label1 = Label(master, text = "Alphabetelement: ")
 label1.grid(row = 0, column = 0, pady = 15)
 
 entryitem = Entry(master)
@@ -250,11 +250,11 @@ buttonuse.grid(row = 0, column = 2)
 buttonreset = Button(master, text = "Zurücksetzen", command = initdea)
 buttonreset.grid(row = 0, column = 3)
 
-labelfinal = Label(master, text = "XXXXXX")
-labelfinal.grid(row = 0, column = 4)
-
 buttonhelp = Button(master, text = " ? ", command = helpwindow)
-buttonhelp.grid(row = 0, column = 5)
+buttonhelp.grid(row = 0, column = 4)
+
+labelfinal = Label(master, text = "XXXXXX")
+labelfinal.grid(row = 0, column = 5)
 
 canvas1 = Canvas(master, width = 600, height = 450)
 canvas1.grid(row = 1, column = 0, columnspan = 6)
