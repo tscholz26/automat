@@ -90,6 +90,10 @@ class State():
 
     def draw(self):
         canvas1.delete(ALL)
+        if current.final():
+            labelfinal["text"] = "FINAL STATE"
+        else:
+            labelfinal["text"] = "no final state"
         global avouts
         avouts = []
         for avout in self.__outcomes:
@@ -222,7 +226,7 @@ global startval
 startval = q_2
 
 label1 = Label(master, text = "alphabet item to use: ")
-label1.grid(row = 0, column = 0)
+label1.grid(row = 0, column = 0, pady = 15)
 
 entryitem = Entry(master)
 entryitem.grid(row = 0, column = 1)
