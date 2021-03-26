@@ -4,11 +4,7 @@ Documentation for this module.
 More details.
 """
 
-from tkinter import *
-import math, time
-
-#master = Tk()
-
+global current
 
 class State():
     """
@@ -35,18 +31,29 @@ class State():
         print("--------------------------------------------------")
         print("new state has been set")
         current.showstate()
+        
 
     def showstate(self):
         print("name: " + self.__name)
-        print("outcomes: ")
-        #for outcome in self.__outcomes:
-        #    print(outcome)
-        for i in range (0,len(self.__outcomes)):
-            print(str(self.__alphabet[i]) + " --> " + self.__outcomes[i])
+        current.draw()
+        if len(self.__outcomes) > 0:
+            print("outcomes: ")
+            for i in range (0,len(self.__outcomes)):
+                print(str(self.__alphabet[i]) + " --> " + self.__outcomes[i])
+        else:
+            print("possible outcomes: none")
         if self.__final:
             print("final state reached")
         else:
             print("final state not reached")
+        if len(self.__outcomes) > 0:
+            asknextstate()
+        else:
+            answer = input("dead end! restart? (y/n) ")
+            print("--------------------------------------------------")
+            if answer == "y":
+                initdea()
+
             
     def getoutcomes(self):
         return(self.__outcomes)
@@ -54,19 +61,19 @@ class State():
     def getalphabet(self):
         return(self.__alphabet)
 
-q_0 = State("q_0", ["q_0", "q_1", "q_3"], ["a","1","3"], 20, 40, 0)
-q_1 = State("q_1", ["q_1", "q_2"], ["1","2"], 20, 40, 0)
-q_2 = State("q_2", ["q_0"], ["f"], 20, 40, 0)
-q_3 = State("q_3", ["q_1", "q_2", "q_3"], ["1","2","3"], 20, 40, 1)
+    def draw(self):
+        avouts = []
+        for avout in self.__outcomes:
+            if not (avout in avouts):
+                avouts.append(avout)
+        n = len(avouts)
+        print("zu zeichnende kreise: " + str(n))
 
-statelist = [q_0, q_1, q_2, q_3]
-#Startwert definieren und anzeigen
-current = q_0
-print("Starting state has been set")
-current.showstate()
+
 
 
 def asknextstate():
+    #current.draw()
     alph = current.getalphabet()
     outc = current.getoutcomes()
     alphitem = (input("next alphabet item used? "))
@@ -76,7 +83,7 @@ def asknextstate():
             for nextstate in statelist:
                 if nextname == nextstate.name():
                     current.setcurrent(nextstate)
-            asknextstate()
+            #asknextstate()
         else:
             print("mistake occured")
             asknextstate()
@@ -84,11 +91,40 @@ def asknextstate():
         print("item not available atm")
         asknextstate()
 
-asknextstate()
+#Startwert definieren und anzeigen
+def initdea():
+    global current
+    current = startval
+    print("Starting state has been set")
+    current.showstate()
+    asknextstate()
+
+        
+"""Test DEA:
+q_0 = State("q_0", ["q_0", "q_1", "q_3"], ["a","1","3"],  0)
+q_1 = State("q_1", ["q_1", "q_2"], ["1","2"], 20, 40, 0)
+q_2 = State("q_2", ["q_0"], ["f"], 20, 40, 0)
+q_3 = State("q_3", ["q_1", "q_2", "q_3"], ["1","2","3"], 20, 40, 1)
+statelist = [q_0, q_1, q_2, q_3]
+startval = q_0
+"""
+
+#Eingabe des DEAS
+q_2 = State("q_2", ["q_05"], ["0"], 20, 40, 0)
+q_05 = State("q_05", ["q_0", "q_013", "q_013", "q_013", "q_013", "q_013", "q_013", "q_013", "q_013", "q_013"], ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"], 20, 40, 1)
+q_0 = State("q_0", ["q_0", "q_013", "q_013", "q_013", "q_013", "q_013", "q_013", "q_013", "q_013", "q_013"], ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"], 20, 40, 0)
+q_013 = State("q_013", ["q_0", "q_013", "q_013", "q_013", "q_013", "q_013", "q_013", "q_013", "q_013", "q_013", "q_4", "q_4"], ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "+", "-"], 20, 40, 1)              
+q_4 = State("q_4", [], [], 20, 40, 1)
+statelist = [q_2, q_05, q_0, q_013, q_4]
+startval = q_2
 
 
-#noch zu tun
-# fehler, wenn alphabet nicht genauso viele elemente hat wie outcomes (fehlerbehebung direkt bei der eingabe)
+#Initialisierung des Startzustandes
+current = startval
+initdea()
+
+
+
 
 
 
