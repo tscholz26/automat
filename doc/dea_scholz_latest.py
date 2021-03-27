@@ -4,7 +4,7 @@ Documentation for this module.
 More details.
 """
 
-vers = "2.2.0"
+vers = "2.2.1"
 
 from tkinter import *
 import math, time
@@ -129,8 +129,11 @@ class State():
         if current.final():
             labelfinal["text"] = "ZIELZUSTAND"
             labelfinal["font"] = "bold"
+            canvas1["bg"] = "#c0eda1"
+            #master["bg"] = "#c0eda1"
         else:
             labelfinal["text"] = "kein Zielzustand"
+            canvas1["bg"] = "#f08080"
         global avouts
         avouts = []
         for avout in self.__outcomes:
@@ -140,11 +143,12 @@ class State():
         global r
         #vorheriges zeichnen
         if not prev.name() == "prev":
-            print("vorheriges zeichnen: ")            
-            canvas1.create_oval(75-r,75-r,75+r,75+r, outline = "#a9a9a9")
-            canvas1.create_line(75+r,75,225-r,75, dash =(4,3), fill = "#a9a9a9")
-            canvas1.create_polygon(225-r,75,225-r-12,71,225-r-12,79, fill = "#a9a9a9")
-            canvas1.create_text(75,75, text = prev.name(), fill = "#a9a9a9")
+            print("vorheriges zeichnen: ")
+            color = "#c0c0c0"
+            canvas1.create_oval(75-r,75-r,75+r,75+r, outline = color)
+            canvas1.create_line(75+r,75,225-r,75, dash =(4,3), fill = color)
+            canvas1.create_polygon(225-r,75,225-r-12,71,225-r-12,79, fill = color)
+            canvas1.create_text(75,75, text = prev.name(), fill = color)
         #aktuelles zeichnen
         current.setx(225)
         current.sety(75)
@@ -204,9 +208,11 @@ def initdea():
     """Hiermit wird das Programm initialisiert. Dabei wird der erste Zustand eingeleitet
     und erste Informationen werden mithilfe der showstate()-Methode ausgegeben.
     """
+    global prev
     global current
     global startval
-    current = startval
+    prev = State("prev", [], [], 100, 100, 1)
+    current = startval    
     print("Starting state has been set")
     current.showstate()
 
