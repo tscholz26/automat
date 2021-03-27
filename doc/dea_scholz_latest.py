@@ -4,7 +4,7 @@ Documentation for this module.
 More details.
 """
 
-vers = "2.3.0"
+vers = "2.3.1"
 
 from tkinter import *
 import math, time
@@ -142,15 +142,21 @@ class State():
         global showbar
         canvas1.delete(ALL)
         global usecolor
+        if showbar:
+            master.title("Simulation DEA (v" + vers + ")")
         if current.final():
             if showbar:
-                labelfinal["text"] = "ZIELZUSTAND"
+                labelfinal["text"] = "FINALZUSTAND"
                 labelfinal["font"] = "bold"
+            else:
+                master.title("Simulation DEA (v" + vers + ") (Finalzustand erreicht)")
             if usecolor:
                 canvas1["bg"] = "#c0eda1"
         else:
             if showbar:
-                labelfinal["text"] = "kein Zielzustand"
+                labelfinal["text"] = "kein Finalzustand"
+            else:
+                master.title("Simulation DEA (v" + vers + ") (kein Finalzustand erreicht)")
             if usecolor:
                 canvas1["bg"] = "#f08080"
         global avouts
@@ -265,7 +271,7 @@ def click(eventclick):
 def release(eventclick):
     """Diese Methode wird aufgerufen, wenn Mouse1 losgelassen wird. Dabei wird
     überprüft, ob der Mauszeiger sich bei Klicken und Loslassen auf einem der Boxen
-    für die Zielstunde lag und leitet diese gegebenenfalls ein.
+    für die Finalzustände lag und leitet diese gegebenenfalls ein.
     """
     global clickx
     global clicky
@@ -286,6 +292,13 @@ def release(eventclick):
             current.setcurrent(prev)
             print("previous state was executed")
 
+def keypress(key):
+    print(key.char)
+    if key.char == "h":
+        helpwindow()
+    if key.char == "z":
+        initdea()
+
 def clickverification(px,py,cx,cy,rx,ry):
     """Diese Methode überprüft, ob mit einem Mouseclick der Punkt (px|py) getroffen
     wurde. Dabei wurde der Punkt C(xy|cy) angeklickt und bei R(rx|ry) wurde der
@@ -305,7 +318,7 @@ def helpwindow():
     """
     popup = Tk()
     popup.title("Hilfe")
-    msg = ("Oben links finden Sie in hellgrau den vorhergehenden\nZustand und oben rechts den aktuellen Zustand.\nUnten sind die möglichen Zielzustände aufgelistet.\nSie können entweder die Zielzustände anklicken,\noder Sie geben das passende Alphabetelement oben\nin das Entry ein und bestätigen. Mit dem reset-Button\nkönnen Sie zum Startzustand zurückkehren. Die rote\nHintergrundfarbe soll anzeigen, dass der aktuelle Zustand\nkein Finalzustand ist, beim Gegenteil davon erfolgt\neine grüne Färbung.")
+    msg = ("Oben links finden Sie in hellgrau den vorhergehenden\nZustand und oben rechts den aktuellen Zustand.\nUnten sind die möglichen Finalzustände aufgelistet.\nSie können entweder die Finalzustände anklicken,\noder Sie geben das passende Alphabetelement oben\nin das Entry ein und bestätigen. Mit dem reset-Button\nkönnen Sie zum Startzustand zurückkehren. Die rote\nHintergrundfarbe soll anzeigen, dass der aktuelle Zustand\nkein Finalzustand ist, beim Gegenteil davon erfolgt\neine grüne Färbung.")
     labelmsg = Label(popup, text = msg, justify = 'left', font = '15')
     labelmsg.pack(padx = 10, pady = 10)
                         
@@ -332,6 +345,7 @@ def generatewidgets(infobar):
     canvas1 = Canvas(master, width = 600, height = 450)
     canvas1.bind("<Button-1>", click)
     canvas1.bind("<ButtonRelease-1>", release)
+    master.bind("<KeyPress>", keypress)
     if infobar == 1:
         global labelfinal
         label1 = Label(master, text = "Alphabetelement: ")
@@ -369,9 +383,10 @@ helpmenu = Menu(menubar, tearoff = 0)
 
 
 #define cascades
-statemenu.add_command(label = "prev", command = lambda:(current.setcurrent(prev)))
-statemenu.add_cascade(label = "next", menu = alphabetmenu)
-statemenu.add_command(label = "reset", command = initdea)
+statemenu.add_command(label = "Vorgergehender Zustand", command = lambda:(current.setcurrent(prev)))
+statemenu.add_cascade(label = "Folgezustand", menu = alphabetmenu)
+statemenu.add_separator()
+statemenu.add_command(label = "Zurücksetzen  (z)", command = initdea)
     
 def refreshalphabetmenu():
     alphabetmenu.delete(0,END)
@@ -384,17 +399,17 @@ def refreshappearancemenu():
     global usecolor
     global showprev     
     if showbar:
-        appearancemenu.add_command(label = "hide bar", command = lambda:(toggleshowbar(0)))
+        appearancemenu.add_command(label = "Widget-Leiste verbergen", command = lambda:(toggleshowbar(0)))
     else:
-        appearancemenu.add_command(label = "show bar", command = lambda:(toggleshowbar(1)))
+        appearancemenu.add_command(label = "Widget-Leiste einfügen", command = lambda:(toggleshowbar(1)))
     if usecolor:
-        appearancemenu.add_command(label = "enable grey mode", command = lambda:(togglecolor(0)))
+        appearancemenu.add_command(label = "Farbmodus ausschalten", command = lambda:(togglecolor(0)))
     else:
-        appearancemenu.add_command(label = "enable color mode", command = lambda:(togglecolor(1)))
+        appearancemenu.add_command(label = "Farbmodus anschalten", command = lambda:(togglecolor(1)))
     if showprev:
-        appearancemenu.add_command(label = "hide prev state", command = lambda:(toggleshowprev(0)))
+        appearancemenu.add_command(label = "Vorhergenenden Zustand verbergen", command = lambda:(toggleshowprev(0)))
     else:
-        appearancemenu.add_command(label = "show prev state", command = lambda:(toggleshowprev(1)))
+        appearancemenu.add_command(label = "Vorhergehenden Zustand anzeigen", command = lambda:(toggleshowprev(1)))
     
 
 def togglecolor(x):
@@ -430,16 +445,14 @@ def toggleshowbar(x):
     refreshappearancemenu()
 
     
-helpmenu.add_command(label = "info about colors", command = lambda:(print("colorinfo")))
-helpmenu.add_command(label = "popup tips", command = lambda:(print("tipps hier zu finden")))
-helpmenu.add_separator()
-helpmenu.add_command(label = "show DEA", command = lambda:(print("dea showed")))
+helpmenu.add_command(label = "Hilfe anzeigen  (h)", command = helpwindow)
+#helpmenu.add_command(label = "show DEA", command = lambda:(print("dea showed")))
 
 
 #add cascades to menubar
-menubar.add_cascade(label = "States", menu = statemenu)
-menubar.add_cascade(label = "Appearance", menu = appearancemenu)
-menubar.add_cascade(label = "Help", menu = helpmenu)
+menubar.add_cascade(label = "Zustände", menu = statemenu)
+menubar.add_cascade(label = "Erscheinungsbild", menu = appearancemenu)
+menubar.add_cascade(label = "Hilfe", menu = helpmenu)
 
 
 master["menu"] = menubar
