@@ -4,7 +4,7 @@ Documentation for this module.
 More details.
 """
 
-vers = "2.2.1"
+vers = "2.2.2"
 
 from tkinter import *
 import math, time
@@ -28,7 +28,7 @@ class State():
         outcomes: mögliche Folgezustände in bestimmter Reihenfolge
         alphabet: zum Erreichen der entsprechenden Folgezustände nötige Alphabetelemente
         x: x-Koordinate (später in der GUI nötig)
-        y: y-Koordinate
+        y: y-Koordinate (später in der GUI nötig)
         final: Wahrheitswert, gibt an, ob der Zustand ein Finalzustand ist
     """
     def __init__(self, name = str, outcomes = [], alphabet = [], x = float, y = float, final = bool):
@@ -194,8 +194,9 @@ class State():
                         enumeration = enumeration + "," + item
             canvas1.create_text(xm, ym, text = enumeration)
             #spitze
-            k1 = 0.04
-            k2 = 0.013
+            s = math.sqrt(dx**2+dy**2)
+            k1 = 13.5/s
+            k2 = 4.5/s
             xsp1 = xend + k1*dx - k2 * dy
             ysp1 = yend + k1*dy + k2 * dx
             xsp2 = xend + k1*dx + k2 * dy
@@ -255,19 +256,31 @@ def release(eventclick):
 
     global avouts
     for state in avouts:
-        if clickx > zst(state).x()-r:
-            if clickx < zst(state).x()+r:
-                if clicky > zst(state).y()-r:
-                    if clicky < zst(state).y()+r:
-                        print(zst(state).name() + " was clicked at")
-                        current.setcurrent(zst(state))
+        if clickverification(zst(state).x(), zst(state).y(), clickx, clicky, relx, rely):
+            print(zst(state).name() + " was clicked at")
+            current.setcurrent(zst(state))
+
+    if not prev.name() == "prev":
+        if clickverification(75,75,clickx,clicky,relx,rely):
+            current.setcurrent(prev)
+            print("previous state was executed")
+
+def clickverification(px,py,cx,cy,rx,ry):
+    hit = 0
+    global r
+    if cx > px-r and rx > px-r:
+        if cx < px+r and rx < px+r:
+            if cy > py-r and ry > py-r:
+                if cy < py+r and ry < py+r:
+                    hit = 1
+    return(hit)
 
 def helpwindow():
     """Diese Methode ruft ein Hilfefenster mit einem erklärenden Text auf
     """
     popup = Tk()
     popup.title("Hilfe")
-    msg = ("Oben links finden Sie in hellgrau den vorhergehenden\nZustand und oben rechts den aktuellen Zustand.\nUnten sind die möglichen Zielzustände aufgelistet.\nSie können entweder die Zielzustände anklicken,\noder Sie geben das passende Alphabetelement oben\nin das Entry ein und bestätigen. Mit dem reset-Button\nkönnen Sie zum Startzustand zurückkehren.")
+    msg = ("Oben links finden Sie in hellgrau den vorhergehenden\nZustand und oben rechts den aktuellen Zustand.\nUnten sind die möglichen Zielzustände aufgelistet.\nSie können entweder die Zielzustände anklicken,\noder Sie geben das passende Alphabetelement oben\nin das Entry ein und bestätigen. Mit dem reset-Button\nkönnen Sie zum Startzustand zurückkehren. Die rote\nHintergrundfarbe soll anzeigen, dass der aktuelle Zustand\nkein Finalzustand ist, beim Gegenteil davon erfolgt\neine grüne Färbung.")
     labelmsg = Label(popup, text = msg, justify = 'left', font = '15')
     labelmsg.pack(padx = 10, pady = 10)
                         
@@ -304,23 +317,10 @@ labelfinal = Label(master, text = "XXXXXX")
 labelfinal.grid(row = 0, column = 5)
 
 canvas1 = Canvas(master, width = 600, height = 450)
-canvas1.grid(row = 1, column = 0, columnspan = 6)
+canvas1.grid(row = 1, column = 0, columnspan = 7)
 canvas1.bind("<Button-1>", click)
 canvas1.bind("<ButtonRelease-1>", release)
 
 
 #Initialisierung des Startzustandes
 initdea()
-
-
-
-
-    
-
-    
-
-
-
-
-
-
