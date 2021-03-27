@@ -1,21 +1,45 @@
 from tkinter import *
+
 master = Tk()
+menubar = Menu(master)
 
-answer = StringVar(master)
+#enlist different cascades
+statemenu= Menu(menubar, tearoff = 0)
+alphabetmenu = Menu(menubar, tearoff = 0)
+alphabetfullmenu = Menu(menubar, tearoff = 0)
+helpmenu = Menu(menubar, tearoff = 0)
 
-liste = ["1", "2", "3"]
-dmenu = OptionMenu(master, answer, *liste)
-dmenu.pack()
 
-liste2 = ["uohou", "uizhiuz", "uihiu"]
-def setnew(neu):
-    dmenu['menu'].delete(0, 'end')
-    for item in neu:
-        #dmenu['menu'].add_command(label=item, command=tk._setit(var, item))
-        #dmenu['menu'].add(item)
-        dmenu.set_menu(default = None, *liste2)
+#define cascades
+statemenu.add_command(label = "reset", command = lambda:(print("reset finished")))
+statemenu.add_command(label = "prev", command = lambda:(print("went one step back")))
+    
+alphabetmenu.add_command(label = "1", command = lambda:(print("1")))
+alphabetmenu.add_command(label = "2", command = lambda:(print("2")))
+alphabetmenu.add_command(label = "3", command = lambda:(print("3")))
 
-menu2 = Menu(master, answer, *liste)
-menu2.pack()
+global n
+n = int
 
-setnew(liste2)
+for i in range(0,10):
+    alphabetfullmenu.add_command(label = i, command = lambda x = i: change(x))
+
+def change(x):
+    global n
+    n = int(x)
+    print(str(n))
+    
+helpmenu.add_command(label = "info about colors", command = lambda:(print("colorinfo")))
+helpmenu.add_command(label = "popup tips", command = lambda:(print("tipps hier zu finden")))
+helpmenu.add_separator()
+helpmenu.add_command(label = "show DEA", command = lambda:(print("dea showed")))
+
+
+#add cascades to menubar
+menubar.add_cascade(label = "States", menu = statemenu)
+menubar.add_cascade(label = "Alphabet", menu = alphabetmenu)
+menubar.add_cascade(label = "Full alp", menu = alphabetfullmenu)
+menubar.add_cascade(label = "Help", menu = helpmenu)
+
+master["menu"] = menubar
+

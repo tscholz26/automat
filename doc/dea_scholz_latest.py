@@ -266,6 +266,10 @@ def release(eventclick):
             print("previous state was executed")
 
 def clickverification(px,py,cx,cy,rx,ry):
+    """Diese Methode überprüft, ob mit einem Mouseclick der Punkt (px|py) getroffen
+    wurde. Dabei wurde der Punkt C(xy|cy) angeklickt und bei R(rx|ry) wurde der
+    Mousebutton losgelassen.
+    """
     hit = 0
     global r
     if cx > px-r and rx > px-r:
