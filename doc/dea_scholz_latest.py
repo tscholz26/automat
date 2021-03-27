@@ -4,7 +4,7 @@ Documentation for this module.
 More details.
 """
 
-vers = "2.2.2"
+vers = "2.3.0"
 
 from tkinter import *
 import math, time
@@ -20,6 +20,17 @@ global clickx
 global clicky
 global relx
 global rely
+
+global usecolor
+usecolor = bool
+usecolor = 1
+global showprev
+showprev = bool
+showprev = 1
+global showbar
+showbar = bool
+showbar = 0
+
 
 class State():
     """
@@ -56,6 +67,7 @@ class State():
         print("--------------------------------------------------")
         print("new state has been set")
         current.showstate()
+        refreshalphabetmenu()
         
 
     def showstate(self):
@@ -125,15 +137,22 @@ class State():
         Zustand mit den Folgezuständen verbinden. Zudem steht auf dem Pfeil, durch welche
         Alphabetelemente man diese FOlgezustände erreicht.
         """
+        global canvas1
+        global labelfinal
+        global showbar
         canvas1.delete(ALL)
+        global usecolor
         if current.final():
-            labelfinal["text"] = "ZIELZUSTAND"
-            labelfinal["font"] = "bold"
-            canvas1["bg"] = "#c0eda1"
-            #master["bg"] = "#c0eda1"
+            if showbar:
+                labelfinal["text"] = "ZIELZUSTAND"
+                labelfinal["font"] = "bold"
+            if usecolor:
+                canvas1["bg"] = "#c0eda1"
         else:
-            labelfinal["text"] = "kein Zielzustand"
-            canvas1["bg"] = "#f08080"
+            if showbar:
+                labelfinal["text"] = "kein Zielzustand"
+            if usecolor:
+                canvas1["bg"] = "#f08080"
         global avouts
         avouts = []
         for avout in self.__outcomes:
@@ -142,13 +161,14 @@ class State():
         n = len(avouts)
         global r
         #vorheriges zeichnen
-        if not prev.name() == "prev":
-            print("vorheriges zeichnen: ")
-            color = "#c0c0c0"
-            canvas1.create_oval(75-r,75-r,75+r,75+r, outline = color)
-            canvas1.create_line(75+r,75,225-r,75, dash =(4,3), fill = color)
-            canvas1.create_polygon(225-r,75,225-r-12,71,225-r-12,79, fill = color)
-            canvas1.create_text(75,75, text = prev.name(), fill = color)
+        global showprev
+        if showprev:
+            if not prev.name() == "prev":
+                color = "#c0c0c0"
+                canvas1.create_oval(75-r,75-r,75+r,75+r, outline = color)
+                canvas1.create_line(75+r,75,225-r,75, dash =(4,3), fill = color)
+                canvas1.create_polygon(225-r,75,225-r-12,71,225-r-12,79, fill = color)
+                canvas1.create_text(75,75, text = prev.name(), fill = color)
         #aktuelles zeichnen
         current.setx(225)
         current.sety(75)
@@ -216,6 +236,7 @@ def initdea():
     current = startval    
     print("Starting state has been set")
     current.showstate()
+    refreshalphabetmenu()
 
 def zst(name):
     """Diese Methode sucht den Zustand mit dem Name "name" heraus und gibt diesen zurück.
@@ -301,30 +322,134 @@ prev = State("prev", [], [], 100, 100, 1)
 statelist = [q_2, q_05, q_0, q_013, q_4]
 global startval
 startval = q_2
+current = startval
 
-label1 = Label(master, text = "Alphabetelement: ")
-label1.grid(row = 0, column = 0, pady = 15)
+def generatewidgets(infobar):
+    widgetlist = master.grid_slaves()
+    for widget in widgetlist:
+        widget.destroy()
+    global canvas1
+    canvas1 = Canvas(master, width = 600, height = 450)
+    canvas1.bind("<Button-1>", click)
+    canvas1.bind("<ButtonRelease-1>", release)
+    if infobar == 1:
+        global labelfinal
+        label1 = Label(master, text = "Alphabetelement: ")
+        label1.grid(row = 0, column = 0, pady = 15)
 
-entryitem = Entry(master)
-entryitem.grid(row = 0, column = 1)
+        entryitem = Entry(master)
+        entryitem.grid(row = 0, column = 1)
 
-buttonuse = Button(master, text = "Anwenden", command = lambda:(current.use(entryitem.get())))
-buttonuse.grid(row = 0, column = 2)
+        buttonuse = Button(master, text = "Anwenden", command = lambda:(current.use(entryitem.get())))
+        buttonuse.grid(row = 0, column = 2)
 
-buttonreset = Button(master, text = "Zurücksetzen", command = initdea)
-buttonreset.grid(row = 0, column = 3)
+        buttonreset = Button(master, text = "Zurücksetzen", command = initdea)
+        buttonreset.grid(row = 0, column = 3)
 
-buttonhelp = Button(master, text = " ? ", command = helpwindow)
-buttonhelp.grid(row = 0, column = 4)
+        buttonhelp = Button(master, text = " ? ", command = helpwindow)
+        buttonhelp.grid(row = 0, column = 4)
 
-labelfinal = Label(master, text = "XXXXXX")
-labelfinal.grid(row = 0, column = 5)
+        labelfinal = Label(master, text = "XXXXXX")
+        labelfinal.grid(row = 0, column = 5)
 
-canvas1 = Canvas(master, width = 600, height = 450)
-canvas1.grid(row = 1, column = 0, columnspan = 7)
-canvas1.bind("<Button-1>", click)
-canvas1.bind("<ButtonRelease-1>", release)
+        canvas1.grid(row = 1, column = 0, columnspan = 7)        
+    if infobar == 0:
+        canvas1.grid(row = 0, column = 0)
+    global current
+    current.draw()
+
+
+
+menubar = Menu(master)
+#enlist different cascades
+statemenu= Menu(menubar, tearoff = 0)
+alphabetmenu = Menu(menubar, tearoff = 0)
+appearancemenu = Menu(menubar, tearoff = 0)
+helpmenu = Menu(menubar, tearoff = 0)
+
+
+#define cascades
+statemenu.add_command(label = "prev", command = lambda:(current.setcurrent(prev)))
+statemenu.add_cascade(label = "next", menu = alphabetmenu)
+statemenu.add_command(label = "reset", command = initdea)
+    
+def refreshalphabetmenu():
+    alphabetmenu.delete(0,END)
+    for i in current.getalphabet():
+        alphabetmenu.add_command(label = i, command = lambda x = i: current.use(str(x)))
+
+def refreshappearancemenu():
+    appearancemenu.delete(0,END)
+    global showbar
+    global usecolor
+    global showprev     
+    if showbar:
+        appearancemenu.add_command(label = "hide bar", command = lambda:(toggleshowbar(0)))
+    else:
+        appearancemenu.add_command(label = "show bar", command = lambda:(toggleshowbar(1)))
+    if usecolor:
+        appearancemenu.add_command(label = "enable grey mode", command = lambda:(togglecolor(0)))
+    else:
+        appearancemenu.add_command(label = "enable color mode", command = lambda:(togglecolor(1)))
+    if showprev:
+        appearancemenu.add_command(label = "hide prev state", command = lambda:(toggleshowprev(0)))
+    else:
+        appearancemenu.add_command(label = "show prev state", command = lambda:(toggleshowprev(1)))
+    
+
+def togglecolor(x):
+    global usecolor
+    if x == 0:        
+        usecolor = 0
+        canvas1["bg"] = "#f0f0f0"
+    else:
+        usecolor = 1
+        if current.final():
+            canvas1["bg"] = "#c0eda1"
+        else:
+            canvas1["bg"] = "#f08080"
+    refreshappearancemenu()
+
+def toggleshowprev(x):
+    global showprev
+    if x == 0:
+        showprev = 0
+    else:
+        showprev = 1
+    current.draw()
+    refreshappearancemenu()
+
+def toggleshowbar(x):
+    global showbar
+    if x == 0:
+        showbar = 0
+        generatewidgets(0)
+    else:
+        showbar = 1
+        generatewidgets(1)    
+    refreshappearancemenu()
+
+    
+helpmenu.add_command(label = "info about colors", command = lambda:(print("colorinfo")))
+helpmenu.add_command(label = "popup tips", command = lambda:(print("tipps hier zu finden")))
+helpmenu.add_separator()
+helpmenu.add_command(label = "show DEA", command = lambda:(print("dea showed")))
+
+
+#add cascades to menubar
+menubar.add_cascade(label = "States", menu = statemenu)
+menubar.add_cascade(label = "Appearance", menu = appearancemenu)
+menubar.add_cascade(label = "Help", menu = helpmenu)
+
+
+master["menu"] = menubar
 
 
 #Initialisierung des Startzustandes
+generatewidgets(showbar)
 initdea()
+refreshalphabetmenu()
+refreshappearancemenu()
+
+
+

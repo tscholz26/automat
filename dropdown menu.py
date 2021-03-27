@@ -22,9 +22,9 @@ global n
 n = int
 
 for i in range(0,10):
-    alphabetfullmenu.add_command(label = i, command = lambda x = i: change(x))
+    alphabetfullmenu.add_command(label = i, command = lambda x = i: useitem(x))
 
-def change(x):
+def useitem(x):
     global n
     n = int(x)
     print(str(n))
