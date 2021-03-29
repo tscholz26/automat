@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['y_36',['y',['../classdea__scholz__latest_1_1_state.html#a1cf75f6982817f9fc6b669741202805e',1,'dea_scholz_latest::State']]]
+  ['name_58',['name',['../classdea__scholz__latest_1_1_state.html#a56a079b78aa9a123a923f7910de7546c',1,'dea_scholz_latest::State']]],
+  ['neatodea_59',['neatodea',['../namespacedea__scholz__latest.html#a4a35e50aab2cc9ae337395b6fc20f311',1,'dea_scholz_latest']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['release_10',['release',['../namespacedea__scholz__latest.html#a87f620680446d16b5bff612d0c7136a7',1,'dea_scholz_latest']]]
+  ['initdea_14',['initdea',['../namespacedea__scholz__latest.html#aac660fd0923de7f98ae62fbfd62eb353',1,'dea_scholz_latest']]]
 ];

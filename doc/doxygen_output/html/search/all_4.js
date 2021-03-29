@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['helpwindow_7',['helpwindow',['../namespacedea__scholz__latest.html#a01c96fafddcc7d9bf5fc08b891e588b4',1,'dea_scholz_latest']]]
+  ['final_8',['final',['../classdea__scholz__latest_1_1_state.html#ae5978b799e7601b2fcd08faadab0b8de',1,'dea_scholz_latest::State']]]
 ];

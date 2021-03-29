@@ -15,7 +15,7 @@ tristan = "{S->0S|1A|1; A->0B|1A|0|1; B->0S|1A|1}"
 savedgrammars = [ich1, fabi, loc, nils, luisa, marc, tristan]
 savedgrammarnames = ["Tristan S", "Fabien", "Loc", "Nils", "Luisa", "Marc", "Tristan L"]
 
-vers = "2.5.0"
+vers = "2.5.1"
 
 from tkinter import *
 import math, time
@@ -106,14 +106,18 @@ class State():
         return(self.__outcomes)
 
     def addoutcome(self,newoutcome):
+        """Diese Methode fügt einen gewünschten Folgezustand hinzu
+        """
         self.__outcomes.append(newoutcome)
 
     def getalphabet(self):
-        """Diese Methode gibt die ALphabetelemente aus
+        """Diese Methode gibt die Alphabetelemente aus
         """
         return(self.__alphabet)
     
     def additem(self,newitem):
+        """Diese Methode fügt ein gewünschtes Alphabetelement hinzu
+        """
         self.__alphabet.append(newitem)
 
     def setx(self,x):
@@ -331,6 +335,10 @@ def release(eventclick):
             current.setcurrent(prev)
 
 def keypress(key):
+    """Diese Methode wird aufgerufen, wenn die Tastatur bedient wird. Falls eine
+    Taste gedrückt wird, die mit einem der Menü-Hotkeys übereinstimmt, wird dessen
+    Funktion ausgeführt
+    """
     if key.char == "h":
         helpwindow()
     if key.char == "r":
@@ -365,6 +373,12 @@ def helpwindow():
 
 
 def convert(r):
+    """Diese Funktion wandelt die Regelmenge in einen DEA um, der danach im
+    Programm geladen wird. Erst wird dabei die Regelmenge der Grammatik in einzelne
+    Regeln zerlegt, dann wird daraus ein NEA gebildet. Aus dem NEA wird dann ein
+    DEA gemacht, wobei durch die melt()-Methode jeweils neue Zustände entstehen.
+    Zum Schluss wird dieser DEA im Programm geladen.
+    """
     global statelist
     global startval
     global current
@@ -544,6 +558,9 @@ def convert(r):
 
 
 def neatodea(nea):
+    """Diese Methode greift einen NEA auf und wandelt ihn mithilfe der melt()-Methode
+    in einen DEA um, der mit return zurückgegeben wird.
+    """
     completeamb = 0
     global deastatelist
     global deanamelist
@@ -581,6 +598,10 @@ def neatodea(nea):
     return(deastatelist)
 
 def melt():
+    """Diese Methode setzt einen Zustand aus mehreren einzelnen Zuständen zusammen.
+    Wenn dabei neue Zielzustände entstehen, werden diese rekursiv wieder mit der
+    melt()-Methode erstellt
+    """
     global nea
     global deastatelist
     global meltlist
@@ -700,6 +721,9 @@ startval = q_2
 current = startval
 
 def exec(regelmenge):
+    """Diese Methode legt aus einer Regelmenge mit der convert()-Methode die
+    Zustandsmenge und den Startzustand fest und startet die Programmsimulation
+    """
     global current
     global statelist
     global startval
@@ -709,6 +733,9 @@ def exec(regelmenge):
     initdea()
 
 def grammarwindow():
+    """Diese Methode öffnet ein neues Fenster, in dem man eine neue
+    Regelmenge eingibt und diese im Programm simulieren kann.
+    """
     grammarwin = Tk()
     grammarwin.title("Regelmenge implementieren")
     entryrules = Entry(grammarwin, width = 45)
@@ -717,6 +744,8 @@ def grammarwindow():
     buttonsetgrammar.grid(column = 1, row = 0, padx = 10, pady = 10)
 
 def generatewidgets(infobar):
+    """Diese Methode generiert die nötigen Widgets für das tkinter-Fenster
+    """
     global current
     widgetlist = master.grid_slaves()
     for widget in widgetlist:
@@ -754,6 +783,9 @@ def generatewidgets(infobar):
 
 
 def save():
+    """Diese Methode speichert den aktuellen Zustand als .txt-file. Das umfasst die
+    aktuelle Regelmenge, den aktuellen Zustand und den vorhergehenden Zustand.
+    """
     global currentgrammar
     global current
     global prev
@@ -762,6 +794,9 @@ def save():
     statefile.close
 
 def load():
+    """Diese Methode lädt Regelmenge, vorhergehenden Zustand und aktuellen Zustand
+    aus einem .txt-file.
+    """
     statefile = open("save.txt")
     line = statefile.readlines()
     print("typ: " + str(type(line)))
@@ -819,12 +854,19 @@ deamenu.add_cascade(label = "Vorschläge", menu = deasuggestions)
 
     
 def refreshalphabetmenu():
+    """Diese Methode fügt im Menü jeweils Menüpunkte für die aktuell verfügbaren
+    Alphabetelemente hinzu.
+    """
     global current
     alphabetmenu.delete(0,END)
     for i in current.getalphabet():
         alphabetmenu.add_command(label = i, command = lambda x = i: current.use(str(x)))
 
 def refreshappearancemenu():
+    """Diese Methode fügt die Menüpunkte des Erscheinungsbild-Menüs hinzu. Wenn man
+    sich gerade im Farbmodus befindet, gibt es den Menüpunkt "Farbmodus ausschalten"
+    und umgekehrt.
+    """
     appearancemenu.delete(0,END)
     global showbar
     global usecolor
@@ -844,6 +886,9 @@ def refreshappearancemenu():
     
 
 def togglecolor(x):
+    """Diese Methode stellt den aktuellen Farbmodus und den dazugehörigen
+    Menüpunkt um.
+    """
     global usecolor
     global current
     if x == 0:        
@@ -858,6 +903,9 @@ def togglecolor(x):
     refreshappearancemenu()
 
 def toggleshowprev(x):
+    """Diese Methode stellt die Anzeige des vorhergehenden Zustands und
+    den dazugehörigen Menüpunkt um.
+    """
     global showprev
     global current
     if x == 0:
@@ -868,6 +916,9 @@ def toggleshowprev(x):
     refreshappearancemenu()
 
 def toggleshowbar(x):
+    """Diese Methode stellt die Anzeige der Leiste mit Widgets im Fenster
+    und den dazugehörigen Menüpunkt an.
+    """
     global showbar
     if x == 0:
         showbar = 0
@@ -880,6 +931,8 @@ def toggleshowbar(x):
     
 
 def shownea():
+    """Diese Methode stellt alle Zustände der nea-Variable dar.
+    """
     global nea
     for n in range(0,len(nea)):
         print("\n" + nea[n].name())
@@ -888,6 +941,8 @@ def shownea():
         print(nea[n].final())
 
 def showdea():
+    """Diese Methode stellt alle Zustände der deastatelist-Variable dar.
+    """
     global deastatelist
     for n in range(0,len(deastatelist)):
         print("\n" + deastatelist[n].name())
@@ -895,6 +950,8 @@ def showdea():
         print(deastatelist[n].getalphabet())
 
 def showlist():
+    """Diese Methode stellt alle Zustände der statelist-Variable dar.
+    """
     global statelist
     for n in range(0,len(statelist)):
         print("\n" + statelist[n].name())

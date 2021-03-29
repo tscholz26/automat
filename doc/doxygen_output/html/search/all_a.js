@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['x_16',['x',['../classdea__scholz__latest_1_1_state.html#a5208dcd6994b7998390e94619c9869e7',1,'dea_scholz_latest::State']]]
+  ['melt_17',['melt',['../namespacedea__scholz__latest.html#ae1b3c3f37e0c81f84b79b8e72f02b824',1,'dea_scholz_latest']]]
 ];

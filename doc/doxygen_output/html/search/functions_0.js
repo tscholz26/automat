@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['click_21',['click',['../namespacedea__scholz__latest.html#a0b9605e0d0605a743868eb59a14b2369',1,'dea_scholz_latest']]],
-  ['clickverification_22',['clickverification',['../namespacedea__scholz__latest.html#a42c11a590a39e2f082643c719e2a8b7e',1,'dea_scholz_latest']]]
+  ['additem_41',['additem',['../classdea__scholz__latest_1_1_state.html#acfc06ea07088e522314d1b40032c0608',1,'dea_scholz_latest::State']]],
+  ['addoutcome_42',['addoutcome',['../classdea__scholz__latest_1_1_state.html#a998e7924bd2ad55d5598310cc09a774c',1,'dea_scholz_latest::State']]]
 ];
