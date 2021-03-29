@@ -4,16 +4,7 @@ Documentation for this module.
 More details.
 """
 
-ich0 = "{S->0|A0; A->1|2|...|9|A0|A1|...|A9|B1|...|B9; B->+|-}"
-ich1 = "{S->0|A0; A->1|2|3|4|5|6|7|8|9|A0|A1|A2|A3|A4|A5|A6|A7|A8|A9|B1|B2|B3|B4|B5|B6|B7|B8|B9; B->+|-}"
-loc = "{S->Ba|Aa; A->a|Aa|Sb; B->b|Ab}"
-nils = "{S->aS|aA; A->aA|3D;D->aS|6A|6D|3A}"
-luisa = "{S->1A|0B|0; A->1A|0A; B->1B|0S|1|0}"
-fabi = "{S->0S|1S|0A; A->0B; B->0C|0; C->0C|1C|0|1}"
-marc = "{N->aA|bA; A->aA|bB|c; B->bB|c}"
-tristan = "{S->0S|1A|1; A->0B|1A|0|1; B->0S|1A|1}"
-
-vers = "2.4.0"
+vers = "2.3.1"
 
 from tkinter import *
 import math, time
@@ -82,7 +73,6 @@ class State():
     def showstate(self):
         """Diese Methode gibt Details zum aktuellen Zustand aus
         """
-        global current
         print("name: " + self.__name)
         current.draw()
         if len(self.__outcomes) > 0:
@@ -154,7 +144,6 @@ class State():
         Zustand mit den Folgezuständen verbinden. Zudem steht auf dem Pfeil, durch welche
         Alphabetelemente man diese FOlgezustände erreicht.
         """
-        global current
         global canvas1
         global labelfinal
         global showbar
@@ -182,7 +171,6 @@ class State():
         for avout in self.__outcomes:
             if not (avout in avouts):
                 avouts.append(avout)
-        print("new av outs: " + str(avouts))
         n = len(avouts)
         global r
         #vorheriges zeichnen
@@ -262,15 +250,11 @@ def initdea():
     print("Starting state has been set")
     current.showstate()
     refreshalphabetmenu()
-    print("init finished")
 
 def zst(name):
     """Diese Methode sucht den Zustand mit dem Name "name" heraus und gibt diesen zurück.
     Man kann so aus strings Variablen von meinem eigenen Typ State machen.
     """
-    global statelist
-    #print("statelist: " + str(statelist))
-    #print("gesucht: " + name)
     for state in statelist:
         if name == state.name():
             result = state
@@ -301,36 +285,19 @@ def release(eventclick):
     global relx
     global rely
     global r
-    global current
     relx = eventclick.x
     rely = eventclick.y
-    global statelist
-    global avouts
 
-    """
-    for stateav in avouts:
-        if clickverification(zst(stateav).x(), zst(stateav).y(), clickx, clicky, relx, rely):
-            print(zst(stateav).name() + " was clicked at")
-            current.setcurrent(zst(stateav))
-    """
-    done = 0
-    for stateav in statelist:
-        if stateav.name() in current.getoutcomes():
-            px = stateav.x()
-            py = stateav.y()
-            print("outcome found: " + stateav.name()+ " (x|y) = (" + str(px) + "|" + str(py) + ")" )
-            if clickverification(px,py,clickx,clicky,relx,rely) == 1:
-                if done == 0:
-                    print(stateav.name() + " was clicked at")
-                    current.setcurrent(stateav)
-                    #current.showstate()
-                    done = 1
-        
+    global avouts
+    for state in avouts:
+        if clickverification(zst(state).x(), zst(state).y(), clickx, clicky, relx, rely):
+            print(zst(state).name() + " was clicked at")
+            current.setcurrent(zst(state))
 
     if not prev.name() == "prev":
         if clickverification(75,75,clickx,clicky,relx,rely):
-            print("previous state was executed (name) : " + prev.name())
             current.setcurrent(prev)
+            print("previous state was executed")
 
 def keypress(key):
     if key.char == "h":
@@ -361,14 +328,171 @@ def helpwindow():
     labelmsg = Label(popup, text = msg, justify = 'left', font = '15')
     labelmsg.pack(padx = 10, pady = 10)
                         
+    
 
+
+#Eingabe des DEAS
+q_2 = State("q_2", ["q_05"], ["0"], 100, 100, 0)
+q_05 = State("q_05", ["q_0", "q_013", "q_013", "q_013", "q_013", "q_013", "q_013", "q_013", "q_013", "q_013"], ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"], 100, 100, 1)
+q_0 = State("q_0", ["q_0", "q_013", "q_013", "q_013", "q_013", "q_013", "q_013", "q_013", "q_013", "q_013"], ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"], 100, 100, 0)
+q_013 = State("q_013", ["q_0", "q_013", "q_013", "q_013", "q_013", "q_013", "q_013", "q_013", "q_013", "q_013", "q_4", "q_4"], ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "+", "-"], 100, 100, 1)              
+q_4 = State("q_4", [], [], 100, 100, 1)
+prev = State("prev", [], [], 100, 100, 1)
+statelist = [q_2, q_05, q_0, q_013, q_4]
+global startval
+startval = q_2
+current = startval
+
+def generatewidgets(infobar):
+    widgetlist = master.grid_slaves()
+    for widget in widgetlist:
+        widget.destroy()
+    global canvas1
+    canvas1 = Canvas(master, width = 600, height = 450)
+    canvas1.bind("<Button-1>", click)
+    canvas1.bind("<ButtonRelease-1>", release)
+    master.bind("<KeyPress>", keypress)
+    if infobar == 1:
+        global labelfinal
+        label1 = Label(master, text = "Alphabetelement: ")
+        label1.grid(row = 0, column = 0, pady = 15)
+
+        entryitem = Entry(master)
+        entryitem.grid(row = 0, column = 1)
+
+        buttonuse = Button(master, text = "Anwenden", command = lambda:(current.use(entryitem.get())))
+        buttonuse.grid(row = 0, column = 2)
+
+        buttonreset = Button(master, text = "Zurücksetzen", command = initdea)
+        buttonreset.grid(row = 0, column = 3)
+
+        buttonhelp = Button(master, text = " ? ", command = helpwindow)
+        buttonhelp.grid(row = 0, column = 4)
+
+        labelfinal = Label(master, text = "XXXXXX")
+        labelfinal.grid(row = 0, column = 5)
+
+        canvas1.grid(row = 1, column = 0, columnspan = 7)        
+    if infobar == 0:
+        canvas1.grid(row = 0, column = 0)
+    global current
+    current.draw()
+
+
+
+menubar = Menu(master)
+#enlist different cascades
+statemenu= Menu(menubar, tearoff = 0)
+alphabetmenu = Menu(menubar, tearoff = 0)
+appearancemenu = Menu(menubar, tearoff = 0)
+helpmenu = Menu(menubar, tearoff = 0)
+
+
+#define cascades
+statemenu.add_command(label = "Vorgergehender Zustand", command = lambda:(current.setcurrent(prev)))
+statemenu.add_cascade(label = "Folgezustand", menu = alphabetmenu)
+statemenu.add_separator()
+statemenu.add_command(label = "Zurücksetzen  (z)", command = initdea)
+    
+def refreshalphabetmenu():
+    alphabetmenu.delete(0,END)
+    for i in current.getalphabet():
+        alphabetmenu.add_command(label = i, command = lambda x = i: current.use(str(x)))
+
+def refreshappearancemenu():
+    appearancemenu.delete(0,END)
+    global showbar
+    global usecolor
+    global showprev     
+    if showbar:
+        appearancemenu.add_command(label = "Widget-Leiste verbergen", command = lambda:(toggleshowbar(0)))
+    else:
+        appearancemenu.add_command(label = "Widget-Leiste einfügen", command = lambda:(toggleshowbar(1)))
+    if usecolor:
+        appearancemenu.add_command(label = "Farbmodus ausschalten", command = lambda:(togglecolor(0)))
+    else:
+        appearancemenu.add_command(label = "Farbmodus anschalten", command = lambda:(togglecolor(1)))
+    if showprev:
+        appearancemenu.add_command(label = "Vorhergenenden Zustand verbergen", command = lambda:(toggleshowprev(0)))
+    else:
+        appearancemenu.add_command(label = "Vorhergehenden Zustand anzeigen", command = lambda:(toggleshowprev(1)))
+    
+
+def togglecolor(x):
+    global usecolor
+    if x == 0:        
+        usecolor = 0
+        canvas1["bg"] = "#f0f0f0"
+    else:
+        usecolor = 1
+        if current.final():
+            canvas1["bg"] = "#c0eda1"
+        else:
+            canvas1["bg"] = "#f08080"
+    refreshappearancemenu()
+
+def toggleshowprev(x):
+    global showprev
+    if x == 0:
+        showprev = 0
+    else:
+        showprev = 1
+    current.draw()
+    refreshappearancemenu()
+
+def toggleshowbar(x):
+    global showbar
+    if x == 0:
+        showbar = 0
+        generatewidgets(0)
+    else:
+        showbar = 1
+        generatewidgets(1)    
+    refreshappearancemenu()
+
+    
+helpmenu.add_command(label = "Hilfe anzeigen  (h)", command = helpwindow)
+#helpmenu.add_command(label = "show DEA", command = lambda:(print("dea showed")))
+
+
+#add cascades to menubar
+menubar.add_cascade(label = "Zustände", menu = statemenu)
+menubar.add_cascade(label = "Erscheinungsbild", menu = appearancemenu)
+menubar.add_cascade(label = "Hilfe", menu = helpmenu)
+
+
+master["menu"] = menubar
+
+
+#Initialisierung des Startzustandes
+generatewidgets(showbar)
+initdea()
+refreshalphabetmenu()
+refreshappearancemenu()
+
+
+#zu tun: speichern/öffnen der zustände https://exeter-data-analytics.github.io/python-intro/files.html
+#im programm implementieren: grammatik mit regelmenge->dea->in programm einfügen
+
+
+
+
+
+
+
+
+
+ich0 = "{S->0|A0; A->1|2|...|9|A0|A1|...|A9|B1|...|B9; B->+|-}"
+ich1 = "{S->0|A0; A->1|2|3|4|5|6|7|8|9|A0|A1|A2|A3|A4|A5|A6|A7|A8|A9|B1|B2|B3|B4|B5|B6|B7|B8|B9; B->+|-}"
+loc = "{S->Ba|Aa; A->a|Aa|Sb; B->b|Ab}"
+nils = "{S->aS|aA; A->aA|3D;D->aS|6A|6D|3A}"
+luisa = "{S->1A|0B|0; A->1A|0A; B->1B|0S|1|0}"
+fabi = "{S->0S|1S|0A; A->0B; B->0C|0; C->0C|1C|0|1}"
+marc = "{N->aA|bA; A->aA|bB|c; B->bB|c}"
+tristan = "{S->0S|1A|1; A->0B|1A|0|1; B->0S|1A|1}"
 
 
 def convert(r):
-    global statelist
-    global startval
-    global current
-    
     Np = ["A","B","C","D","E","F","G","G","S"]
     global N
     N = []
@@ -447,7 +571,7 @@ def convert(r):
 
 
     #nea erstellen
-    #global statelist
+    global statelist
     statelist = []
     global nea
     nea = []
@@ -501,47 +625,15 @@ def convert(r):
     global startval
     deastatelist = []
     dea = neatodea(nea)
-    statelist = dea
-    #einbuchstabige alte zustände hinzufügen
-    for state in nea:
-        if state.name() not in deanamelist:
-            print("need to add: " + state.name())
-            defoutc = []
-            defalph = []
-            for item in state.getalphabet():
-                if item not in defalph:
-                    defalph.append(item)
-            print("alph von " + state.name() + ": " + str(defalph))
-            
-            for symbol in defalph:
-                outcpartlist = []
-                outcomename = ""
-                for i in range(0,len(state.getoutcomes())):
-                    if state.getalphabet()[i] == symbol:
-                        newpart = state.getoutcomes()[i]
-                        if newpart not in outcpartlist:
-                            outcpartlist.append(newpart)
-                print(outcpartlist)
-                for outc in outcpartlist:
-                    if outcomename == "":
-                        outcomename = outc
-                    else:
-                        outcomename = outcomename + outc
-                defoutc.append(outcomename)
-            
-            defstate = State(state.name(), defoutc, defalph, 100, 100, state.final())
-            if defstate.name() not in deanamelist:
-                dea.append(defstate)
-                deanamelist.append(defstate.name())
+    showdea()
+    """
     for state in dea:
-        if state.name() == S:
-            startval = state
-    #startval = dea[3]
-    #current = startval
-    #initdea
-    #showdea()
-    return(dea, startval, startval)
-
+        if state.name() == "S":
+            startstate = state
+    """
+    startstate = dea[3]
+    
+    return(dea,startstate)
 
 def neatodea(nea):
     completeamb = 0
@@ -567,10 +659,16 @@ def neatodea(nea):
                         completeamb = 1
                         newstate = namei+"|"+namej
                         if newstate not in meltlist:
-                            if not namei == namej:
-                                meltlist.append(newstate)
-                                print("added item: " + newstate)
-
+                            meltlist.append(newstate)
+                            print("added item: " + newstate)
+            """
+                        for zst in nea:
+                                #print("name: " + zst.name())
+                                if state.getoutcomes()[i] == zst.name():
+                                    statei = zst
+                                if state.getoutcomes()[j] == zst.name():
+                                    statej = zst
+            """
     if ambig == 0:
         if state.name() not in deanamelist:
             deastatelist.append(state)
@@ -630,7 +728,7 @@ def melt():
         else:
             statesnamebars = statesnamebars + "|" + i
 
-    #print(statesname)
+    print(statesname)
 
     alphabet = []
     for state in states:
@@ -645,6 +743,29 @@ def melt():
             final = 1
     #print("final: " + str(final))
 
+    """
+    for item in alphabet:
+        outcomes = []
+        outcomeitemlist = []
+        for state in states:
+            for i in range(0,len(state.getalphabet())):
+                if state.getalphabet()[i] == item:
+                    outcomepart = state.getoutcomes()[i]
+                    #if outcomepart not in outcomeitemlist:
+                    if 1 == 1:
+                        outcomeitemlist.append(outcomepart)
+        #zusammensetzen
+        outcomeitem = ""
+        outcomeitembars = ""
+        for symbol in outcomeitemlist:
+            outcomeitem = outcomeitem + symbol
+            if outcomeitembars == "":
+                outcomeitembars = symbol
+            else:
+                outcomeitembars = outcomeitembars + "|" + symbol
+        outcomes.append(outcomeitem)
+    print("outcomes: " + str(outcomes))
+    """
     for item in T:
         itemused = 0
         outcomeparts = []
@@ -666,6 +787,7 @@ def melt():
                             #print("outcstate: " + str(outcomename))
                             if deastate.name() == outcomename:
                                 seenstate = 1
+                                print("duped")
                         if seenstate == 0:
                             if not (outcomenamebars in meltlist):
                                 meltlist.append(outcomenamebars)
@@ -681,172 +803,6 @@ def melt():
         deastatelist.append(newstate)
         deanamelist.append(newstate.name())
     #print("DEA len: " + str(len(deastatelist)))
-
-
-
-#Eingabe des DEAS
-q_2 = State("q_2", ["q_05"], ["0"], 100, 100, 0)
-q_05 = State("q_05", ["q_0", "q_013", "q_013", "q_013", "q_013", "q_013", "q_013", "q_013", "q_013", "q_013"], ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"], 100, 100, 1)
-q_0 = State("q_0", ["q_0", "q_013", "q_013", "q_013", "q_013", "q_013", "q_013", "q_013", "q_013", "q_013"], ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"], 100, 100, 0)
-q_013 = State("q_013", ["q_0", "q_013", "q_013", "q_013", "q_013", "q_013", "q_013", "q_013", "q_013", "q_013", "q_4", "q_4"], ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "+", "-"], 100, 100, 1)              
-q_4 = State("q_4", [], [], 100, 100, 1)
-prev = State("prev", [], [], 100, 100, 1)
-#statelist = [q_2, q_05, q_0, q_013, q_4]
-#global startval
-#startval = q_2
-#current = startval
-statelist, startval, current = convert(ich1)
-#current = startval
-
-def exec(regelmenge):
-    global current
-    global statelist
-    global startval
-    statelist, startval, current = convert(regelmenge)
-    initdea()
-
-def generatewidgets(infobar):
-    global current
-    widgetlist = master.grid_slaves()
-    for widget in widgetlist:
-        widget.destroy()
-    global canvas1
-    canvas1 = Canvas(master, width = 600, height = 450)
-    canvas1.bind("<Button-1>", click)
-    canvas1.bind("<ButtonRelease-1>", release)
-    master.bind("<KeyPress>", keypress)
-    if infobar == 1:
-        global labelfinal
-        label1 = Label(master, text = "Alphabetelement: ")
-        label1.grid(row = 0, column = 0, pady = 15)
-
-        entryitem = Entry(master)
-        entryitem.grid(row = 0, column = 1)
-
-        buttonuse = Button(master, text = "Anwenden", command = lambda:(current.use(entryitem.get())))
-        buttonuse.grid(row = 0, column = 2)
-
-        buttonreset = Button(master, text = "Zurücksetzen", command = initdea)
-        buttonreset.grid(row = 0, column = 3)
-
-        buttonhelp = Button(master, text = " ? ", command = helpwindow)
-        buttonhelp.grid(row = 0, column = 4)
-
-        labelfinal = Label(master, text = "XXXXXX")
-        labelfinal.grid(row = 0, column = 5)
-
-        canvas1.grid(row = 1, column = 0, columnspan = 7)        
-    if infobar == 0:
-        canvas1.grid(row = 0, column = 0)
-    global current
-    current.draw()
-
-
-
-menubar = Menu(master)
-#enlist different cascades
-statemenu= Menu(menubar, tearoff = 0)
-alphabetmenu = Menu(menubar, tearoff = 0)
-appearancemenu = Menu(menubar, tearoff = 0)
-helpmenu = Menu(menubar, tearoff = 0)
-
-
-#define cascades
-statemenu.add_command(label = "Vorgergehender Zustand", command = lambda:(current.setcurrent(prev)))
-statemenu.add_cascade(label = "Folgezustand", menu = alphabetmenu)
-statemenu.add_separator()
-statemenu.add_command(label = "Zurücksetzen  (z)", command = initdea)
-    
-def refreshalphabetmenu():
-    global current
-    alphabetmenu.delete(0,END)
-    for i in current.getalphabet():
-        alphabetmenu.add_command(label = i, command = lambda x = i: current.use(str(x)))
-
-def refreshappearancemenu():
-    appearancemenu.delete(0,END)
-    global showbar
-    global usecolor
-    global showprev     
-    if showbar:
-        appearancemenu.add_command(label = "Widget-Leiste verbergen", command = lambda:(toggleshowbar(0)))
-    else:
-        appearancemenu.add_command(label = "Widget-Leiste einfügen", command = lambda:(toggleshowbar(1)))
-    if usecolor:
-        appearancemenu.add_command(label = "Farbmodus ausschalten", command = lambda:(togglecolor(0)))
-    else:
-        appearancemenu.add_command(label = "Farbmodus anschalten", command = lambda:(togglecolor(1)))
-    if showprev:
-        appearancemenu.add_command(label = "Vorhergenenden Zustand verbergen", command = lambda:(toggleshowprev(0)))
-    else:
-        appearancemenu.add_command(label = "Vorhergehenden Zustand anzeigen", command = lambda:(toggleshowprev(1)))
-    
-
-def togglecolor(x):
-    global usecolor
-    global current
-    if x == 0:        
-        usecolor = 0
-        canvas1["bg"] = "#f0f0f0"
-    else:
-        usecolor = 1
-        if current.final():
-            canvas1["bg"] = "#c0eda1"
-        else:
-            canvas1["bg"] = "#f08080"
-    refreshappearancemenu()
-
-def toggleshowprev(x):
-    global showprev
-    global current
-    if x == 0:
-        showprev = 0
-    else:
-        showprev = 1
-    current.draw()
-    refreshappearancemenu()
-
-def toggleshowbar(x):
-    global showbar
-    if x == 0:
-        showbar = 0
-        generatewidgets(0)
-    else:
-        showbar = 1
-        generatewidgets(1)    
-    refreshappearancemenu()
-
-    
-helpmenu.add_command(label = "Hilfe anzeigen  (h)", command = helpwindow)
-#helpmenu.add_command(label = "show DEA", command = lambda:(print("dea showed")))
-
-
-#add cascades to menubar
-menubar.add_cascade(label = "Zustände", menu = statemenu)
-menubar.add_cascade(label = "Erscheinungsbild", menu = appearancemenu)
-menubar.add_cascade(label = "Hilfe", menu = helpmenu)
-
-
-master["menu"] = menubar
-
-
-#Initialisierung des Startzustandes
-generatewidgets(showbar)
-#convert(ich1)
-#initdea()
-refreshalphabetmenu()
-refreshappearancemenu()
-
-
-#zu tun: speichern/öffnen der zustände https://exeter-data-analytics.github.io/python-intro/files.html
-#im programm implementieren: grammatik mit regelmenge->dea->in programm einfügen
-
-
-
-
-
-
-
     
 def shownea():
     global nea
@@ -862,19 +818,11 @@ def showdea():
         print(deastatelist[n].getoutcomes())
         print(deastatelist[n].getalphabet())
 
-def showlist():
-    global statelist
-    for n in range(0,len(statelist)):
-        print("\n" + statelist[n].name())
-        print(statelist[n].getoutcomes())
-        print(statelist[n].getalphabet())
-        print(statelist[n].x())
-        print(statelist[n].y())
 
 
-#convert(ich1)
-#current = startval
-#initdea()
+statelist,startval = convert(ich1)
+current = startval
+initdea()
 #convert(fabi)
 #shownea()
 #showdea()

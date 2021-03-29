@@ -13,7 +13,7 @@ fabi = "{S->0S|1S|0A; A->0B; B->0C|0; C->0C|1C|0|1}"
 marc = "{N->aA|bA; A->aA|bB|c; B->bB|c}"
 tristan = "{S->0S|1A|1; A->0B|1A|0|1; B->0S|1A|1}"
 
-vers = "2.4.0"
+vers = "2.3.1"
 
 from tkinter import *
 import math, time

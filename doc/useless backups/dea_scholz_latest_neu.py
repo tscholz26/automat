@@ -4,16 +4,7 @@ Documentation for this module.
 More details.
 """
 
-ich0 = "{S->0|A0; A->1|2|...|9|A0|A1|...|A9|B1|...|B9; B->+|-}"
-ich1 = "{S->0|A0; A->1|2|3|4|5|6|7|8|9|A0|A1|A2|A3|A4|A5|A6|A7|A8|A9|B1|B2|B3|B4|B5|B6|B7|B8|B9; B->+|-}"
-loc = "{S->Ba|Aa; A->a|Aa|Sb; B->b|Ab}"
-nils = "{S->aS|aA; A->aA|3D;D->aS|6A|6D|3A}"
-luisa = "{S->1A|0B|0; A->1A|0A; B->1B|0S|1|0}"
-fabi = "{S->0S|1S|0A; A->0B; B->0C|0; C->0C|1C|0|1}"
-marc = "{N->aA|bA; A->aA|bB|c; B->bB|c}"
-tristan = "{S->0S|1A|1; A->0B|1A|0|1; B->0S|1A|1}"
-
-vers = "2.4.0"
+vers = "2.3.1"
 
 from tkinter import *
 import math, time
@@ -82,7 +73,6 @@ class State():
     def showstate(self):
         """Diese Methode gibt Details zum aktuellen Zustand aus
         """
-        global current
         print("name: " + self.__name)
         current.draw()
         if len(self.__outcomes) > 0:
@@ -154,7 +144,6 @@ class State():
         Zustand mit den Folgezuständen verbinden. Zudem steht auf dem Pfeil, durch welche
         Alphabetelemente man diese FOlgezustände erreicht.
         """
-        global current
         global canvas1
         global labelfinal
         global showbar
@@ -182,7 +171,6 @@ class State():
         for avout in self.__outcomes:
             if not (avout in avouts):
                 avouts.append(avout)
-        print("new av outs: " + str(avouts))
         n = len(avouts)
         global r
         #vorheriges zeichnen
@@ -262,15 +250,11 @@ def initdea():
     print("Starting state has been set")
     current.showstate()
     refreshalphabetmenu()
-    print("init finished")
 
 def zst(name):
     """Diese Methode sucht den Zustand mit dem Name "name" heraus und gibt diesen zurück.
     Man kann so aus strings Variablen von meinem eigenen Typ State machen.
     """
-    global statelist
-    #print("statelist: " + str(statelist))
-    #print("gesucht: " + name)
     for state in statelist:
         if name == state.name():
             result = state
@@ -301,36 +285,19 @@ def release(eventclick):
     global relx
     global rely
     global r
-    global current
     relx = eventclick.x
     rely = eventclick.y
-    global statelist
-    global avouts
 
-    """
-    for stateav in avouts:
-        if clickverification(zst(stateav).x(), zst(stateav).y(), clickx, clicky, relx, rely):
-            print(zst(stateav).name() + " was clicked at")
-            current.setcurrent(zst(stateav))
-    """
-    done = 0
-    for stateav in statelist:
-        if stateav.name() in current.getoutcomes():
-            px = stateav.x()
-            py = stateav.y()
-            print("outcome found: " + stateav.name()+ " (x|y) = (" + str(px) + "|" + str(py) + ")" )
-            if clickverification(px,py,clickx,clicky,relx,rely) == 1:
-                if done == 0:
-                    print(stateav.name() + " was clicked at")
-                    current.setcurrent(stateav)
-                    #current.showstate()
-                    done = 1
-        
+    global avouts
+    for state in avouts:
+        if clickverification(zst(state).x(), zst(state).y(), clickx, clicky, relx, rely):
+            print(zst(state).name() + " was clicked at")
+            current.setcurrent(zst(state))
 
     if not prev.name() == "prev":
         if clickverification(75,75,clickx,clicky,relx,rely):
-            print("previous state was executed (name) : " + prev.name())
             current.setcurrent(prev)
+            print("previous state was executed")
 
 def keypress(key):
     if key.char == "h":
@@ -364,11 +331,17 @@ def helpwindow():
 
 
 
+
+ich0 = "{S->0|A0; A->1|2|...|9|A0|A1|...|A9|B1|...|B9; B->+|-}"
+ich1 = "{S->0|A0; A->1|2|3|4|5|6|7|8|9|A0|A1|A2|A3|A4|A5|A6|A7|A8|A9|B1|B2|B3|B4|B5|B6|B7|B8|B9; B->+|-}"
+loc = "{S->Ba|Aa; A->a|Aa|Sb; B->b|Ab}"
+nils = "{S->aS|aA; A->aA|3D;D->aS|6A|6D|3A}"
+luisa = "{S->1A|0B|0; A->1A|0A; B->1B|0S|1|0}"
+fabi = "{S->0S|1S|0A; A->0B; B->0C|0; C->0C|1C|0|1}"
+marc = "{N->aA|bA; A->aA|bB|c; B->bB|c}"
+tristan = "{S->0S|1A|1; A->0B|1A|0|1; B->0S|1A|1}"
+
 def convert(r):
-    global statelist
-    global startval
-    global current
-    
     Np = ["A","B","C","D","E","F","G","G","S"]
     global N
     N = []
@@ -381,7 +354,6 @@ def convert(r):
     r = r[r.index("{")+1:r.index("}")]
     print("klammern entfernt\nr: " + r + "\n")
 
-
     #leerzeichen filtern
     i = 0
     while i < len(r):    
@@ -389,7 +361,6 @@ def convert(r):
             r = r[0:i] + r[i+1:]
         i = i + 1
     print("leerzeichen gefiltert: " + r + "\n")
-
     
     i = 0
     while i < len(r):
@@ -413,9 +384,7 @@ def convert(r):
     
     print("Startzustand: " + S)
     print("N: " + str(N))
-    print("T: " + str(T))
-    
-
+    print("T: " + str(T))  
     #regeln seperieren
     i = 0
     while i < len(r):    
@@ -445,9 +414,8 @@ def convert(r):
         #print("new singlerule: " + rule)
     print("regeln vereinzelt: " + str(rulelist) + "\n")
 
-
     #nea erstellen
-    #global statelist
+    global statelist
     statelist = []
     global nea
     nea = []
@@ -500,63 +468,21 @@ def convert(r):
     global deastatelist
     global startval
     deastatelist = []
-    dea = neatodea(nea)
-    statelist = dea
-    #einbuchstabige alte zustände hinzufügen
-    for state in nea:
-        if state.name() not in deanamelist:
-            print("need to add: " + state.name())
-            defoutc = []
-            defalph = []
-            for item in state.getalphabet():
-                if item not in defalph:
-                    defalph.append(item)
-            print("alph von " + state.name() + ": " + str(defalph))
-            
-            for symbol in defalph:
-                outcpartlist = []
-                outcomename = ""
-                for i in range(0,len(state.getoutcomes())):
-                    if state.getalphabet()[i] == symbol:
-                        newpart = state.getoutcomes()[i]
-                        if newpart not in outcpartlist:
-                            outcpartlist.append(newpart)
-                print(outcpartlist)
-                for outc in outcpartlist:
-                    if outcomename == "":
-                        outcomename = outc
-                    else:
-                        outcomename = outcomename + outc
-                defoutc.append(outcomename)
-            
-            defstate = State(state.name(), defoutc, defalph, 100, 100, state.final())
-            if defstate.name() not in deanamelist:
-                dea.append(defstate)
-                deanamelist.append(defstate.name())
+    dea = neatodea(nea)+nea
+    showdea()
     for state in dea:
-        if state.name() == S:
-            startval = state
-    #startval = dea[3]
-    #current = startval
-    #initdea
-    #showdea()
-    return(dea, startval, startval)
-
+        if state.name() == "S":
+            startstate = state
+    
+    return(dea,startstate)
 
 def neatodea(nea):
     completeamb = 0
     global deastatelist
-    global deanamelist
-    deanamelist = []
     global meltlist
     meltlist = []
     for state in nea:
         ambig = 0
-        if len(state.getoutcomes()) == 0:
-            if state.name() not in deanamelist:
-                deastatelist.append(state)
-                deanamelist.append(state.name())
-                ambig = 1
         for i in range(0,len(state.getalphabet())):
             for j in range(0,len(state.getalphabet())):
                 if state.getalphabet()[i] == state.getalphabet()[j]:
@@ -567,14 +493,18 @@ def neatodea(nea):
                         completeamb = 1
                         newstate = namei+"|"+namej
                         if newstate not in meltlist:
-                            if not namei == namej:
-                                meltlist.append(newstate)
-                                print("added item: " + newstate)
-
+                            meltlist.append(newstate)
+                            print("added item: " + newstate)
+            """
+                        for zst in nea:
+                                #print("name: " + zst.name())
+                                if state.getoutcomes()[i] == zst.name():
+                                    statei = zst
+                                if state.getoutcomes()[j] == zst.name():
+                                    statej = zst
+            """
     if ambig == 0:
-        if state.name() not in deanamelist:
-            deastatelist.append(state)
-            deanamelist.append(state.name())
+        deastatelist.append(state)
     print("meltlist0: " + str(meltlist))
     while len(meltlist) > 0:
         #melt(meltlist[0])
@@ -586,7 +516,6 @@ def melt():
     global deastatelist
     global meltlist
     global T
-    global deanamelist
 
     alph = []
     outc = []
@@ -630,7 +559,7 @@ def melt():
         else:
             statesnamebars = statesnamebars + "|" + i
 
-    #print(statesname)
+    print(statesname)
 
     alphabet = []
     for state in states:
@@ -645,6 +574,29 @@ def melt():
             final = 1
     #print("final: " + str(final))
 
+    """
+    for item in alphabet:
+        outcomes = []
+        outcomeitemlist = []
+        for state in states:
+            for i in range(0,len(state.getalphabet())):
+                if state.getalphabet()[i] == item:
+                    outcomepart = state.getoutcomes()[i]
+                    #if outcomepart not in outcomeitemlist:
+                    if 1 == 1:
+                        outcomeitemlist.append(outcomepart)
+        #zusammensetzen
+        outcomeitem = ""
+        outcomeitembars = ""
+        for symbol in outcomeitemlist:
+            outcomeitem = outcomeitem + symbol
+            if outcomeitembars == "":
+                outcomeitembars = symbol
+            else:
+                outcomeitembars = outcomeitembars + "|" + symbol
+        outcomes.append(outcomeitem)
+    print("outcomes: " + str(outcomes))
+    """
     for item in T:
         itemused = 0
         outcomeparts = []
@@ -677,10 +629,23 @@ def melt():
     #print(alph)
     #print(outc)
     newstate = State(statesname, outc, alph, 100, 100, final)
-    if newstate.name() not in deanamelist:
-        deastatelist.append(newstate)
-        deanamelist.append(newstate.name())
+    deastatelist.append(newstate)
     #print("DEA len: " + str(len(deastatelist)))
+    
+def shownea():
+    global nea
+    for n in range(0,len(nea)):
+        print("\n" + nea[n].name())
+        print(nea[n].getoutcomes())
+        print(nea[n].getalphabet())
+
+def showdea():
+    global deastatelist
+    for n in range(0,len(deastatelist)):
+        print("\n" + deastatelist[n].name())
+        print(deastatelist[n].getoutcomes())
+        print(deastatelist[n].getalphabet())
+
 
 
 
@@ -692,21 +657,12 @@ q_013 = State("q_013", ["q_0", "q_013", "q_013", "q_013", "q_013", "q_013", "q_0
 q_4 = State("q_4", [], [], 100, 100, 1)
 prev = State("prev", [], [], 100, 100, 1)
 #statelist = [q_2, q_05, q_0, q_013, q_4]
-#global startval
+global startval
 #startval = q_2
-#current = startval
-statelist, startval, current = convert(ich1)
-#current = startval
-
-def exec(regelmenge):
-    global current
-    global statelist
-    global startval
-    statelist, startval, current = convert(regelmenge)
-    initdea()
+statelist,startval = convert(ich1)
+current = startval
 
 def generatewidgets(infobar):
-    global current
     widgetlist = master.grid_slaves()
     for widget in widgetlist:
         widget.destroy()
@@ -758,7 +714,6 @@ statemenu.add_separator()
 statemenu.add_command(label = "Zurücksetzen  (z)", command = initdea)
     
 def refreshalphabetmenu():
-    global current
     alphabetmenu.delete(0,END)
     for i in current.getalphabet():
         alphabetmenu.add_command(label = i, command = lambda x = i: current.use(str(x)))
@@ -784,7 +739,6 @@ def refreshappearancemenu():
 
 def togglecolor(x):
     global usecolor
-    global current
     if x == 0:        
         usecolor = 0
         canvas1["bg"] = "#f0f0f0"
@@ -798,7 +752,6 @@ def togglecolor(x):
 
 def toggleshowprev(x):
     global showprev
-    global current
     if x == 0:
         showprev = 0
     else:
@@ -832,8 +785,7 @@ master["menu"] = menubar
 
 #Initialisierung des Startzustandes
 generatewidgets(showbar)
-#convert(ich1)
-#initdea()
+initdea()
 refreshalphabetmenu()
 refreshappearancemenu()
 
@@ -847,37 +799,259 @@ refreshappearancemenu()
 
 
 
+
+
+ich0 = "{S->0|A0; A->1|2|...|9|A0|A1|...|A9|B1|...|B9; B->+|-}"
+ich1 = "{S->0|A0; A->1|2|3|4|5|6|7|8|9|A0|A1|A2|A3|A4|A5|A6|A7|A8|A9|B1|B2|B3|B4|B5|B6|B7|B8|B9; B->+|-}"
+loc = "{S->Ba|Aa; A->a|Aa|Sb; B->b|Ab}"
+nils = "{S->aS|aA; A->aA|3D;D->aS|6A|6D|3A}"
+luisa = "{S->1A|0B|0; A->1A|0A; B->1B|0S|1|0}"
+fabi = "{S->0S|1S|0A; A->0B; B->0C|0; C->0C|1C|0|1}"
+marc = "{N->aA|bA; A->aA|bB|c; B->bB|c}"
+tristan = "{S->0S|1A|1; A->0B|1A|0|1; B->0S|1A|1}"
+
+
+def convert(r):
+    Np = ["A","B","C","D","E","F","G","G","S"]
+    global N
+    N = []
+    Tp = ["0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f","g","+","-"]
+    global T
+    T = []
+    R = []
+    S = str
+
+    #klammern entfernen
+    r = r[r.index("{")+1:r.index("}")]
+    print("klammern entfernt\nr: " + r + "\n")
+
+
+    #leerzeichen filtern
+    i = 0
+    while i < len(r):    
+        if r[i] == " ":
+            r = r[0:i] + r[i+1:]
+        i = i + 1
+    print("leerzeichen gefiltert: " + r + "\n")
+
     
+    i = 0
+    while i < len(r):
+        if r[i] == "-":
+            if i < len(r)-1:
+                if r[i+1] == ">":
+                    r = r[:i] + "$" + r[i+2:]
+                    i = 0
+        i = i + 1
+    print("pfeil ersetzt: " + r + "\n")
+
+    #N, T und S bestimmen
+    for i in range(0,len(r)):
+        if r[i] in Np:
+            if not r[i] in N:
+                N.append(r[i])
+        if r[i] in Tp:
+            if not r[i] in T:
+                T.append(r[i])
+    S = r[0]
+    print("Startzustand: " + S)
+    print("N: " + str(N))
+    print("T: " + str(T))
+    
+
+    #regeln seperieren
+    i = 0
+    while i < len(r):    
+        if r[i] == ";":
+            newrule = r[0:i]
+            R.append(newrule)
+            #print("newrule: " + newrule)
+            r = r[i+1:]
+        i = i + 1
+    R.append(r)
+    print("regelmenge: " + str(R) + "\n")
+
+    #durch | getrennte regeln vereinzeln
+    rulelist =  []
+    for rule in R:
+        i = 0
+        while i < len(rule):
+            if rule[i] == "|":
+                singlerule = rule[0:i]
+                rulelist.append(singlerule)
+                #print("singlerule: " + singlerule)
+                rule = rule[0:rule.index("$")+1] + rule[i+1:]
+                #print("new R part: " + str(rule))
+                i = 0
+            i = i + 1
+        rulelist.append(rule)
+        #print("new singlerule: " + rule)
+    print("regeln vereinzelt: " + str(rulelist) + "\n")
+
+
+    #nea erstellen
+    global statelist
+    statelist = []
+    global nea
+    nea = []
+    neanamelist = []
+    global dea
+    dea = []
+    #statecount = 0
+    for rule in rulelist:
+        left = rule[:rule.index("$")]
+        right = rule[rule.index("$")+1:]
+        item = str
+        final = 1
+        for i in range(0,len(right)):
+            if right[i] in N:
+                final = 0
+            if right[i] in T:
+                item = right[i]
+                if final == 0:
+                    right = right[:i]+ right[i+1:]
+                else:
+                    right = left + "_final"
+        statename = "q_" + str(len(statelist))
+        outcomes = []
+        outcomes.append(right)
+        alphabet = []
+        alphabet.append(item)
+        #print(str(outcomes))
+        newstate = State(right, outcomes, alphabet, 100, 100, final)
+        #print(left)
+        #print(newstate.getoutcomes())
+        statelist.append(newstate)
+        #zu nea hinzufügen, wenn es noch keinen mit gleichem name gibt
+        if not newstate.name() in neanamelist:
+            nea.append(newstate)
+            neanamelist.append(newstate.name())
+        #print(right + ": " + str(final))
+            
+    for state in statelist:
+        i = 0
+        while i < len(nea):
+            neastate = nea[i]
+            if (state.name() == neastate.name()):
+                if not state == neastate:
+                    neastate.addoutcome(state.getoutcomes()[0])
+                    neastate.additem(state.getalphabet()[0])
+            i = i + 1
+
+
+    #create dea
+    #wenn keine "doppelnutzung": direkt hinzufügen
+    """for state in nea:
+        ambig = 0
+        itemlist = []
+        for item in state.getalphabet():
+            if item in itemlist:
+                ambig = 1
+            itemlist.append(item)
+        if ambig == 0:
+            dea.append(state)
+            print(state.name() + " ist eindeutig")
+            print(state.getalphabet())
+        else:
+            print(state.name() + " ist nicht eindeutig")
+            print(state.getalphabet())
+    """
+    """
+    for state in nea:
+        ambig = 1
+        while ambig > 0:
+            ambig = 0
+            #prüfen, ob zustand eindeutig ist
+            for item in state.getalphabet():
+                if item in itemlist:
+                    ambig = 1
+                itemlist.append(item)
+                """
+    #dea = neatodea(nea)
+    #print("DEA: " + str(dea))
+
+def neatodea(nea):
+    completeamb = 0
+    global deastatelist
+    deastatelist = []
+    for state in nea:
+        ambig = 0
+        for i in range(0,len(state.getalphabet())):
+            for j in range(0,len(state.getalphabet())):
+                if state.getalphabet()[i] == state.getalphabet()[j]:
+                    if i < j:
+                        #if not(state.getalphabet()[i] == state.getalphabet()[j]):
+                        if 1 == 1:
+                            ambig = 1
+                            completeamb = 1
+                            print("using " + state.getalphabet()[i] + " results in: ")
+                            print("state[i]: " + state.getoutcomes()[i])
+                            print("state[j]: " + state.getoutcomes()[j])
+                            for zst in nea:
+                                
+                                #print("name: " + zst.name())
+                                if state.getoutcomes()[i] == zst.name():
+                                    statei = zst
+                                if state.getoutcomes()[j] == zst.name():
+                                    statej = zst
+                            deastatelist.append(melt(statei,statej))
+                            #melt(statei,statej)   
+                            print("melt one state from " + statei.name() + " and " + statej.name())
+        if ambig == 0:
+            deastatelist.append(state)
+            #print(state.name() + " ist eindeutig")
+            #print(state.getalphabet())
+        else:
+            print(state.name() + " ist nicht eindeutig")
+            #print(state.getalphabet())
+    if completeamb == 1:
+        #print("noch nicht eindeutig, neustart")
+        deastatelist = neatodea(deastatelist)
+    else:
+        #print("alles eindeutig, erfolg")
+        #print("statelist (= dea): " + str(deastatelist))
+        return(deastatelist)
+
+def melt(statex,statey):
+    #print("melting initialized")
+    name = statex.name() + statey.name()
+    outcomes = []
+    alphabet = []
+    global T
+    global deastatelist
+    global nea
+    #t: alphabetelemente
+    for item in T:
+        for x in range(0,len(statex.getalphabet())):
+            for y in range(0,len(statey.getalphabet())):
+                if statex.getalphabet()[x] == statey.getalphabet()[y]:
+                    alphabet.append(statex.getalphabet()[x])                   
+                    outcomes.append(statex.getoutcomes()[x]+statey.getoutcomes()[y])
+                    #print("appended")
+                    #listall = nea + deastatelist
+                    for statexyz in (nea+deastatelist):
+                        if statexyz.name() == statex.getalphabet()[x]:
+                            outx = statexyz
+                        if statexyz.name() == statey.getalphabet()[y]:
+                            outy = statexyz
+                    #deastatelist.append(melt(outx,outy))
+                    #melt(outx,outy)
+    if (statex.final() + statey.final()) == 0:
+        final = 0
+    else:
+        final = 1
+    resultstate = State(name, outcomes, alphabet, 100, 100, final)
+    #deastatelist.append(resultstate)
+    return(State(name, outcomes, alphabet, 100, 100, final))
+
 def shownea():
     global nea
     for n in range(0,len(nea)):
-        print("\n" + nea[n].name())
         print(nea[n].getoutcomes())
         print(nea[n].getalphabet())
-
-def showdea():
-    global deastatelist
-    for n in range(0,len(deastatelist)):
-        print("\n" + deastatelist[n].name())
-        print(deastatelist[n].getoutcomes())
-        print(deastatelist[n].getalphabet())
-
-def showlist():
-    global statelist
-    for n in range(0,len(statelist)):
-        print("\n" + statelist[n].name())
-        print(statelist[n].getoutcomes())
-        print(statelist[n].getalphabet())
-        print(statelist[n].x())
-        print(statelist[n].y())
-
-
-#convert(ich1)
-#current = startval
-#initdea()
+convert(ich1)
 #convert(fabi)
-#shownea()
-#showdea()
+shownea()
 
 
 
