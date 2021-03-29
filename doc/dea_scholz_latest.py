@@ -15,7 +15,7 @@ tristan = "{S->0S|1A|1; A->0B|1A|0|1; B->0S|1A|1}"
 savedgrammars = [ich1, fabi, loc, nils, luisa, marc, tristan]
 savedgrammarnames = ["Tristan S", "Fabien", "Loc", "Nils", "Luisa", "Marc", "Tristan L"]
 
-vers = "2.4.2"
+vers = "2.5.0"
 
 from tkinter import *
 import math, time
@@ -41,6 +41,7 @@ showprev = 1
 global showbar
 showbar = bool
 showbar = 0
+global currentgrammar
 
 
 class State():
@@ -157,6 +158,7 @@ class State():
         Alphabetelemente man diese FOlgezustände erreicht.
         """
         global current
+        global currentgrammar
         global canvas1
         global labelfinal
         global showbar
@@ -176,7 +178,7 @@ class State():
             if showbar:
                 labelfinal["text"] = "kein Finalzustand"
             else:
-                master.title("Simulation DEA (v" + vers + ") (kein Finalzustand erreicht)")
+                master.title("Simulation DEA (v" + vers + ") (kein Finalzustand erreicht)" )
             if usecolor:
                 canvas1["bg"] = "#f08080"
         global avouts
@@ -701,6 +703,8 @@ def exec(regelmenge):
     global current
     global statelist
     global startval
+    global currentgrammar
+    currentgrammar = regelmenge
     statelist, startval, current = convert(regelmenge)
     initdea()
 
@@ -749,6 +753,42 @@ def generatewidgets(infobar):
     current.draw()
 
 
+def save():
+    global currentgrammar
+    global current
+    global prev
+    statefile = open("save.txt", "w")
+    statefile.write(currentgrammar + "$" + current.name() + "%" +  prev.name())
+    statefile.close
+
+def load():
+    statefile = open("save.txt")
+    line = statefile.readlines()
+    print("typ: " + str(type(line)))
+    x = str(line)[2:-2]
+    print("line: " + x)
+
+    grammar = x[:x.index("$")]
+    curname = x[x.index("$")+1:x.index("%")]
+    prevname = x[x.index("%")+1:]
+
+    #print("grammar: " + grammar + "|")
+    #print("cur: " + curname + "|")
+    #print("prev: " + prevname + "|")
+    exec(grammar)
+    global deastatelist
+    global current
+    newprev = State("prev", [], [], 100, 100, 0)
+    for state in deastatelist:
+        if state.name() == curname:
+            newcur = state
+        if state.name() == prevname:
+            newprev = state
+            print("set prev")
+    current.setcurrent(newprev)
+    current.setcurrent(newcur)
+
+
 
 menubar = Menu(master)
 #enlist different cascades
@@ -764,7 +804,11 @@ helpmenu = Menu(menubar, tearoff = 0)
 statemenu.add_command(label = "Vorgergehender Zustand  (z)", command = lambda:(current.setcurrent(prev)))
 statemenu.add_cascade(label = "Folgezustand bestimmen", menu = alphabetmenu)
 statemenu.add_separator()
+statemenu.add_command(label = "Zustand speichern", command = save)
+statemenu.add_command(label = "Zustand laden", command = load)
+statemenu.add_separator()
 statemenu.add_command(label = "Zurücksetzen  (r)", command = initdea)
+
 
 deamenu.add_command(label = "Regelmenge Tristan S", command = lambda:(exec(ich1)))
 deamenu.add_command(label = "Selbst eingeben", command = grammarwindow)
@@ -833,6 +877,8 @@ def toggleshowbar(x):
         generatewidgets(1)    
     refreshappearancemenu()
 
+    
+
 def shownea():
     global nea
     for n in range(0,len(nea)):
@@ -858,6 +904,7 @@ def showlist():
         print(statelist[n].y())
 
     
+    
 helpmenu.add_command(label = "Hilfe anzeigen  (h)", command = helpwindow)
 
 
@@ -867,7 +914,6 @@ menubar.add_cascade(label = "Grammatik laden", menu = deamenu)
 menubar.add_cascade(label = "Erscheinungsbild", menu = appearancemenu)
 menubar.add_cascade(label = "Hilfe", menu = helpmenu)
 
-
 master["menu"] = menubar
 
 
@@ -875,6 +921,7 @@ master["menu"] = menubar
 generatewidgets(showbar)
 refreshalphabetmenu()
 refreshappearancemenu()
+exec(ich1)
 
 
 
