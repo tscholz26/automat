@@ -12,7 +12,7 @@ Hotkeys an, die zum jeweiligen Menuepunkt fuehren.
 Im Grammatikmenue koennen Sie bestimmte Grammatiken laden. Mit dem ersten Menuepunkt laden Sie meine
 eigene Regelmenge, diese wird auch beim Start des Programms aufgerufen. Doch Sie koennen auch andere
 Regelmengen laden. Das Programm wandelt diese zunaechst in einen NEA um, diesen dann in einen DEA und
-der DEA wird schließlich im Programm darstellbar gemacht. Neben der Moeglichkeit, selbst ausgedachte
+der DEA wird schliesslich im Programm darstellbar gemacht. Neben der Moeglichkeit, selbst ausgedachte
 Regelmengen einzugeben, koennen Sie auch Regelmengen einiger anderer Schueler simulieren.
 
 Unter Erscheinungsbild koennen sie eine Leiste mit Widgets ein- oder ausblenden, mit der man genauso
