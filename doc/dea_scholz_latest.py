@@ -4,18 +4,17 @@ Documentation for this module.
 More details.
 """
 
-ich0 = "{S->0|A0; A->1|2|...|9|A0|A1|...|A9|B1|...|B9; B->+|-}"
-ich1 = "{S->0|A0; A->1|2|3|4|5|6|7|8|9|A0|A1|A2|A3|A4|A5|A6|A7|A8|A9|B1|B2|B3|B4|B5|B6|B7|B8|B9; B->+|-}"
+tristans = "{S->0|A0; A->1|2|...|9|A0|A1|...|A9|B1|...|B9; B->+|-}"
 loc = "{S->Ba|Aa; A->a|Aa|Sb; B->b|Ab}"
 nils = "{S->aS|aA; A->aA|3D;D->aS|6A|6D|3A}"
 luisa = "{S->1A|0B|0; A->1A|0A; B->1B|0S|1|0}"
 fabi = "{S->0S|1S|0A; A->0B; B->0C|0; C->0C|1C|0|1}"
 marc = "{N->aA|bA; A->aA|bB|c; B->bB|c}"
-tristan = "{S->0S|1A|1; A->0B|1A|0|1; B->0S|1A|1}"
-savedgrammars = [ich1, fabi, loc, nils, luisa, marc, tristan]
+tristanl = "{S->0S|1A|1; A->0B|1A|0|1; B->0S|1A|1}"
+savedgrammars = [tristans, fabi, loc, nils, luisa, marc, tristanl]
 savedgrammarnames = ["Tristan S", "Fabien", "Loc", "Nils", "Luisa", "Marc", "Tristan L"]
 
-vers = "2.5.1"
+vers = "2.5.2"
 
 from tkinter import *
 import math, time
@@ -370,7 +369,55 @@ def helpwindow():
     labelmsg.pack(padx = 10, pady = 10)
                         
 
+def filterdots(rulelist):
+    rule = rulelist
+    filtered = 0
+    while filtered == 0:
+        filtered = 1
+        i = 0
+        while i < len(rule):
+            if rule[i] == ".":
+                if rule[i+1] == ".":
+                    if rule[i+2] == ".":
+                        filtered = 0
+                        bars = 0
+                        n = 1
+                        found = 0
+                        while found == 0:
+                            if rule[i-1] == "|":
+                                if rule[i-1-n] == "|":
+                                    found = 1
+                            n = n + 1
+                        n = n - 2
+                        itemleft = rule[i-1-n:i-1]
+                        itemright = rule[i+4:i+4+n]
+                        itemmiddle = ""
+                        if itemleft == "0" and itemright == "9":
+                            itemmiddle = "1|2|3|4|5|6|7|8"
+                        if itemleft == "1" and itemright == "9":
+                            itemmiddle = "2|3|4|5|6|7|8"
+                        if itemleft == "2" and itemright == "9":
+                            itemmiddle = "3|4|5|6|7|8"
+                            
+                        if itemleft == "A0" and itemright == "A9":
+                            itemmiddle = "A1|A2|A3|A4|A5|A6|A7|A8"
+                        if itemleft == "A1" and itemright == "A9":
+                            itemmiddle = "A2|A3|A4|A5|A6|A7|A8"
+                        if itemleft == "A2" and itemright == "A9":
+                            itemmiddle = "A3|A4|A5|A6|A7|A8"
 
+                        if itemleft == "B0" and itemright == "B9":
+                            itemmiddle = "B1|B2|B3|B4|B5|B6|B7|B8"
+                        if itemleft == "B1" and itemright == "B9":
+                            itemmiddle = "B2|B3|B4|B5|B6|B7|B8"
+                        if itemleft == "B2" and itemright == "B9":
+                            itemmiddle = "B3|B4|B5|B6|B7|B8"
+                            
+                        rule = rule[:i] + itemmiddle + rule[i+3:]
+                        
+            i = i + 1
+    print("... ersetzt: " + rule)
+    return(rule)
 
 def convert(r):
     """Diese Funktion wandelt die Regelmenge in einen DEA um, der danach im
@@ -379,6 +426,7 @@ def convert(r):
     DEA gemacht, wobei durch die melt()-Methode jeweils neue Zustände entstehen.
     Zum Schluss wird dieser DEA im Programm geladen.
     """
+    r = filterdots(r)
     global statelist
     global startval
     global current
@@ -707,7 +755,7 @@ def melt():
 #Eingabe des DEAS
 """für grammar->dfa:
 prev = State("prev", [], [], 100, 100, 1)
-statelist, startval, current = convert(ich1)
+statelist, startval, current = convert(tristans)
 """
 q_2 = State("q_2", ["q_05"], ["0"], 100, 100, 0)
 q_05 = State("q_05", ["q_0", "q_013", "q_013", "q_013", "q_013", "q_013", "q_013", "q_013", "q_013", "q_013"], ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"], 100, 100, 1)
@@ -845,7 +893,7 @@ statemenu.add_separator()
 statemenu.add_command(label = "Zurücksetzen  (r)", command = initdea)
 
 
-deamenu.add_command(label = "Regelmenge Tristan S", command = lambda:(exec(ich1)))
+deamenu.add_command(label = "Regelmenge Tristan S", command = lambda:(exec(tristans)))
 deamenu.add_command(label = "Selbst eingeben", command = grammarwindow)
 deamenu.add_separator()
 for i in range(0,len(savedgrammars)):
@@ -978,7 +1026,7 @@ master["menu"] = menubar
 generatewidgets(showbar)
 refreshalphabetmenu()
 refreshappearancemenu()
-exec(ich1)
+exec(tristans)
 
 
 

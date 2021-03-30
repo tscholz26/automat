@@ -1,1 +1,1 @@
-{S->0S|1S|0A; A->0B; B->0C|0; C->0C|1C|0|1}$SCC_final%SABCB_final
+{S->0|A0; A->1|2|3|4|5|6|7|8|9|A0|A1|A2|A3|A4|A5|A6|A7|A8|A9|B1|B2|B3|B4|B5|B6|B7|B8|B9; B->+|-}$A_finalAB%A
