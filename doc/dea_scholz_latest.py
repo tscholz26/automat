@@ -14,7 +14,7 @@ tristanl = "{S->0S|1A|1; A->0B|1A|0|1; B->0S|1A|1}"
 savedgrammars = [tristans, fabi, loc, nils, luisa, marc, tristanl]
 savedgrammarnames = ["Tristan S", "Fabien", "Loc", "Nils", "Luisa", "Marc", "Tristan L"]
 
-vers = "2.5.2"
+vers = "2.5.3"
 
 from tkinter import *
 import math, time
@@ -364,8 +364,12 @@ def helpwindow():
     """
     popup = Tk()
     popup.title("Hilfe")
-    msg = ("Oben links finden Sie in hellgrau den vorhergehenden\nZustand und oben rechts den aktuellen Zustand.\nUnten sind die möglichen Finalzustände aufgelistet.\nSie können entweder die Finalzustände anklicken,\noder Sie geben das passende Alphabetelement oben\nin das Entry ein und bestätigen. Mit dem reset-Button\nkönnen Sie zum Startzustand zurückkehren. Die rote\nHintergrundfarbe soll anzeigen, dass der aktuelle Zustand\nkein Finalzustand ist, beim Gegenteil davon erfolgt\neine grüne Färbung.")
-    labelmsg = Label(popup, text = msg, justify = 'left', font = '15')
+    helpfile = open("help.txt")
+    msg = ""
+    for line in helpfile:
+        msg = msg + line
+    helpfile.close()
+    labelmsg = Label(popup, text = msg, justify = 'left', font = '12')
     labelmsg.pack(padx = 10, pady = 10)
                         
 
@@ -412,6 +416,27 @@ def filterdots(rulelist):
                             itemmiddle = "B2|B3|B4|B5|B6|B7|B8"
                         if itemleft == "B2" and itemright == "B9":
                             itemmiddle = "B3|B4|B5|B6|B7|B8"
+
+                        if itemleft == "0" and itemright == "8":
+                            itemmiddle = "1|2|3|4|5|6|7"
+                        if itemleft == "1" and itemright == "8":
+                            itemmiddle = "2|3|4|5|6|7"
+                        if itemleft == "2" and itemright == "8":
+                            itemmiddle = "3|4|5|6|7"
+                            
+                        if itemleft == "A0" and itemright == "A8":
+                            itemmiddle = "A1|A2|A3|A4|A5|A6|A7"
+                        if itemleft == "A1" and itemright == "A8":
+                            itemmiddle = "A2|A3|A4|A5|A6|A7"
+                        if itemleft == "A2" and itemright == "A8":
+                            itemmiddle = "A3|A4|A5|A6|A7"
+
+                        if itemleft == "B0" and itemright == "B8":
+                            itemmiddle = "B1|B2|B3|B4|B5|B6|B7"
+                        if itemleft == "B1" and itemright == "B8":
+                            itemmiddle = "B2|B3|B4|B5|B6|B7"
+                        if itemleft == "B2" and itemright == "B8":
+                            itemmiddle = "B3|B4|B5|B6|B7"
                             
                         rule = rule[:i] + itemmiddle + rule[i+3:]
                         

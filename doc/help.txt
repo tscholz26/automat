@@ -1,0 +1,21 @@
+Oben links finden Sie in hellgrau den vorhergehenden Zustand und oben rechts den aktuellen Zustand.
+Unten sind die moeglichen Finalzustaende aufgelistet. Die rote Hintergrundfarbe soll anzeigen, dass
+der aktuelle Zustand kein Finalzustand ist, beim Gegenteil davon erfolgt eine gruene Faerbung.
+
+Sie koennen entweder die Finalzustaende anklicken, oder Sie waelhen unter Zustaende -> Folgezustand best.
+ein Alphabetelement aus. Mit Zustaende -> Zustand speichern koennen Sie die aktuelle Anordnung speichern,
+und mit Zustaende -> Zustand laden zu einem beliebigen Zeitpunkt wiederherstellen. Der Rest des Zustaende-
+Menues ist relativ selbsterklaerend.
+Rechts von einigen Menuepunkten sehen Sie zudem Kleinbuchstaben in Klammern, diese zeigen bestimmte
+Hotkeys an, die zum jeweiligen Menuepunkt fuehren.
+
+Im Grammatikmenue koennen Sie bestimmte Grammatiken laden. Mit dem ersten Menuepunkt laden Sie meine
+eigene Regelmenge, diese wird auch beim Start des Programms aufgerufen. Doch Sie koennen auch andere
+Regelmengen laden. Das Programm wandelt diese zunaechst in einen NEA um, diesen dann in einen DEA und
+der DEA wird schließlich im Programm darstellbar gemacht. Neben der Moeglichkeit, selbst ausgedachte
+Regelmengen einzugeben, koennen Sie auch Regelmengen einiger anderer Schueler simulieren.
+
+Unter Erscheinungsbild koennen sie eine Leiste mit Widgets ein- oder ausblenden, mit der man genauso
+wie im Menue oder durch das Anklicken von Zustaenden durch den Automaten navigieren kann.Zudem koennen
+Sie die Farbeinstellungen aendern und einstellen, ob Sie sich den vorhergehenden Zustand anzeigen
+lassen wollen.
